@@ -1,0 +1,277 @@
+{
+  "source_project": "User-owned PulseICP",
+  "snapshot_date": "2026-10-19",
+  "runtime_dependency_on_source_project": false,
+  "files": [
+    {
+      "upstream": "pulseicp/__init__.py",
+      "upstream_sha256": "fba7b9bc1ba3b7f845caa543c46f393e5919c7edfdab47d4a461d87f474c4053",
+      "local": "__init__.py",
+      "local_sha256": "fba7b9bc1ba3b7f845caa543c46f393e5919c7edfdab47d4a461d87f474c4053",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/capture_competition.py",
+      "upstream_sha256": "5ead0f592cb4275c25f2791cdac0f948c9b376a459b98b93bb136c3451d9f1c8",
+      "local": "capture_competition.py",
+      "local_sha256": "5ead0f592cb4275c25f2791cdac0f948c9b376a459b98b93bb136c3451d9f1c8",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/carbon_prior.py",
+      "upstream_sha256": "894fa56f3b26c2ff5907ae9511eed4488dc2e2416cfa940af8a19f97111a3d88",
+      "local": "carbon_prior.py",
+      "local_sha256": "894fa56f3b26c2ff5907ae9511eed4488dc2e2416cfa940af8a19f97111a3d88",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/composition.py",
+      "upstream_sha256": "817961c5325496d7cec6ab429f9ccf309b9438d72681985e652f7fe17c3b37f6",
+      "local": "composition.py",
+      "local_sha256": "817961c5325496d7cec6ab429f9ccf309b9438d72681985e652f7fe17c3b37f6",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/configuration.py",
+      "upstream_sha256": "eec2a22c48b8fb76a3fcbc8126f007eddeb0b27a3edfc81c127c3323a1a32977",
+      "local": "configuration.py",
+      "local_sha256": "f6c0b6c20c1249a86fc498b54a3ab12f03600c015e89ff16ef1f59087332818c",
+      "adaptations": [
+        "Resource root relocated into the vendored package."
+      ]
+    },
+    {
+      "upstream": "pulseicp/data.py",
+      "upstream_sha256": "517d5fa10b3c5420eec3b153fca054228cf84e8edbb1edd6ade00eb02a8b02aa",
+      "local": "data.py",
+      "local_sha256": "517d5fa10b3c5420eec3b153fca054228cf84e8edbb1edd6ade00eb02a8b02aa",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/diffusion.py",
+      "upstream_sha256": "b3e3ec9927e95d4bab9679d2c1732e7774da9639465a3a0bdd27252531d9a863",
+      "local": "diffusion.py",
+      "local_sha256": "b3e3ec9927e95d4bab9679d2c1732e7774da9639465a3a0bdd27252531d9a863",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/element_migration.py",
+      "upstream_sha256": "240141a546cba5c9249c37591b626589da6071c0c2ef755fd0d521e6546e6d15",
+      "local": "element_migration.py",
+      "local_sha256": "240141a546cba5c9249c37591b626589da6071c0c2ef755fd0d521e6546e6d15",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/ensemble.py",
+      "upstream_sha256": "8fcd0a2e3bf62c373c5d0023061f30373222366835f01f170928740a5c345eb7",
+      "local": "ensemble.py",
+      "local_sha256": "8fcd0a2e3bf62c373c5d0023061f30373222366835f01f170928740a5c345eb7",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/features.py",
+      "upstream_sha256": "7e6d51cc06e4a46e3c9b1c1227c1eab6ef8d5d9bcf24a0dbd25610d85768e5eb",
+      "local": "features.py",
+      "local_sha256": "7e6d51cc06e4a46e3c9b1c1227c1eab6ef8d5d9bcf24a0dbd25610d85768e5eb",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/mass_decoder.py",
+      "upstream_sha256": "a8eda93e5bc7bd6d55d7c7003512ebe0fba931903346e674300615dfe246703f",
+      "local": "mass_decoder.py",
+      "local_sha256": "a8eda93e5bc7bd6d55d7c7003512ebe0fba931903346e674300615dfe246703f",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/metal_prior.py",
+      "upstream_sha256": "312a2056178836771d39aa32d6ae927ef245e5358c97160daa59fcabc43e3bb6",
+      "local": "metal_prior.py",
+      "local_sha256": "312a2056178836771d39aa32d6ae927ef245e5358c97160daa59fcabc43e3bb6",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/methods.py",
+      "upstream_sha256": "1e736c33e3ac592df32177d6fe23ae945299c478ca6995fa8106a20779069263",
+      "local": "methods.py",
+      "local_sha256": "1e736c33e3ac592df32177d6fe23ae945299c478ca6995fa8106a20779069263",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/migration.py",
+      "upstream_sha256": "144fc6835152bed170868547318b6ce4e3ce2f05871d253bd9944fdb92b2a530",
+      "local": "migration.py",
+      "local_sha256": "144fc6835152bed170868547318b6ce4e3ce2f05871d253bd9944fdb92b2a530",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/networks.py",
+      "upstream_sha256": "cc208fc3c5bdbb6fc327953c3c6a0f8412a4783221cbe02d2e6808fae5c4281c",
+      "local": "networks.py",
+      "local_sha256": "cc208fc3c5bdbb6fc327953c3c6a0f8412a4783221cbe02d2e6808fae5c4281c",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/preparation.py",
+      "upstream_sha256": "7ceafcdb62a49d210c3a73b90523e3dfc73920e40dd7831f4a77d89c9bd95354",
+      "local": "preparation.py",
+      "local_sha256": "7ceafcdb62a49d210c3a73b90523e3dfc73920e40dd7831f4a77d89c9bd95354",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/references.py",
+      "upstream_sha256": "8448896abbc0f194124e941361089813f6542c9bb69c696c26a00b6122c5c037",
+      "local": "references.py",
+      "local_sha256": "86824641a0fe086aae82b3c4f2f816a99bd9a1ce4092e5eb9a3bc83d8991ef9c",
+      "adaptations": [
+        "Resource root relocated into the vendored package."
+      ]
+    },
+    {
+      "upstream": "pulseicp/schema.py",
+      "upstream_sha256": "96eb639cecaa13e0c123633e77a94534f8e1397543d8a87b699aef360498a4da",
+      "local": "schema.py",
+      "local_sha256": "96eb639cecaa13e0c123633e77a94534f8e1397543d8a87b699aef360498a4da",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/screening.py",
+      "upstream_sha256": "d188ae51f308297bbc7799059b498332b843032dde9ed30b73c3686ab0f0d03b",
+      "local": "screening.py",
+      "local_sha256": "d188ae51f308297bbc7799059b498332b843032dde9ed30b73c3686ab0f0d03b",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/screening_prior.py",
+      "upstream_sha256": "f5cb29a5cfff32b43772af964572aa424dc44cc9b08f0d86cefc9de6fc01eac4",
+      "local": "screening_prior.py",
+      "local_sha256": "f5cb29a5cfff32b43772af964572aa424dc44cc9b08f0d86cefc9de6fc01eac4",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/simulation.py",
+      "upstream_sha256": "080c4d784fef900967dd78750061671b206bc78a4150abeb7eef6a22c295ade3",
+      "local": "simulation.py",
+      "local_sha256": "080c4d784fef900967dd78750061671b206bc78a4150abeb7eef6a22c295ade3",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/thermal_profile.py",
+      "upstream_sha256": "c2b11af03bc7d1e5389a1600deb757bce0c56195f1405b1acfda1daad773da0e",
+      "local": "thermal_profile.py",
+      "local_sha256": "c2b11af03bc7d1e5389a1600deb757bce0c56195f1405b1acfda1daad773da0e",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/thermodynamics.py",
+      "upstream_sha256": "20bf1d0268d921afc5380e5e52b97448bdb1e4e121e46b8d4e9f3ee10b79381b",
+      "local": "thermodynamics.py",
+      "local_sha256": "20bf1d0268d921afc5380e5e52b97448bdb1e4e121e46b8d4e9f3ee10b79381b",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/transfer.py",
+      "upstream_sha256": "f9b12eb11355462c4da3d6f90f98a8358a08d0244e939e2a4b40764ce0341ad9",
+      "local": "transfer.py",
+      "local_sha256": "f9b12eb11355462c4da3d6f90f98a8358a08d0244e939e2a4b40764ce0341ad9",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/uncertainty.py",
+      "upstream_sha256": "6d305a51657f1928501f6c730ece310506bfa07bf457ec8184252633704827f0",
+      "local": "uncertainty.py",
+      "local_sha256": "6d305a51657f1928501f6c730ece310506bfa07bf457ec8184252633704827f0",
+      "adaptations": []
+    },
+    {
+      "upstream": "pulseicp/validation.py",
+      "upstream_sha256": "3f37ddb86635421080a12f86236ca457621773720c07278def13910de40b5ad2",
+      "local": "validation.py",
+      "local_sha256": "3f37ddb86635421080a12f86236ca457621773720c07278def13910de40b5ad2",
+      "adaptations": []
+    },
+    {
+      "upstream": "configs/model.json",
+      "upstream_sha256": "d03e894f91bc0a026ffc599ae6424a4e6b039756864c0246cb36fa2911c06f47",
+      "local": "configs/model.json",
+      "local_sha256": "d03e894f91bc0a026ffc599ae6424a4e6b039756864c0246cb36fa2911c06f47",
+      "adaptations": []
+    },
+    {
+      "upstream": "configs/physics.json",
+      "upstream_sha256": "83b06655786dee6d0f09f39efc3c03c598191f439270a271da589b23079a629a",
+      "local": "configs/physics.json",
+      "local_sha256": "83b06655786dee6d0f09f39efc3c03c598191f439270a271da589b23079a629a",
+      "adaptations": []
+    },
+    {
+      "upstream": "configs/screening_prior.json",
+      "upstream_sha256": "c69693febc4277d3a3c1005d9ca7c38751c89ffe266b749ec5e98e358aea4363",
+      "local": "configs/screening_prior.json",
+      "local_sha256": "c69693febc4277d3a3c1005d9ca7c38751c89ffe266b749ec5e98e358aea4363",
+      "adaptations": []
+    },
+    {
+      "upstream": "resources/binary_mixing_enthalpies.json",
+      "upstream_sha256": "a1fb7793d6142d7f63052400c509bbfcabceb5418a98493028cdd79c3e144a98",
+      "local": "resources/binary_mixing_enthalpies.json",
+      "local_sha256": "a1fb7793d6142d7f63052400c509bbfcabceb5418a98493028cdd79c3e144a98",
+      "adaptations": []
+    },
+    {
+      "upstream": "resources/element_properties.json",
+      "upstream_sha256": "251d561a5f95ebbb63e998be1b81236a936917dd83460715513b6440cd7646a9",
+      "local": "resources/element_properties.json",
+      "local_sha256": "251d561a5f95ebbb63e998be1b81236a936917dd83460715513b6440cd7646a9",
+      "adaptations": []
+    },
+    {
+      "upstream": "resources/element_thermal_references.json",
+      "upstream_sha256": "a1c5749a2f9accde0a9e26c7a666acda5b2050d73024b28ee2e3a57056799543",
+      "local": "resources/element_thermal_references.json",
+      "local_sha256": "a1c5749a2f9accde0a9e26c7a666acda5b2050d73024b28ee2e3a57056799543",
+      "adaptations": []
+    },
+    {
+      "upstream": "resources/legacy_thermal_provenance.json",
+      "upstream_sha256": "b0839b78cbc3fd47b6701cdae1f887d113b5500e94902aaf4a91332049f371bc",
+      "local": "resources/legacy_thermal_provenance.json",
+      "local_sha256": "b0839b78cbc3fd47b6701cdae1f887d113b5500e94902aaf4a91332049f371bc",
+      "adaptations": []
+    },
+    {
+      "upstream": "resources/LICENSE.matminer",
+      "upstream_sha256": "e4df766c6937dad4a0f0646e2afbbc1689aacb3a0c30db687acbd86f73083cc4",
+      "local": "resources/LICENSE.matminer",
+      "local_sha256": "e4df766c6937dad4a0f0646e2afbbc1689aacb3a0c30db687acbd86f73083cc4",
+      "adaptations": []
+    },
+    {
+      "upstream": "resources/LICENSE.mendeleev",
+      "upstream_sha256": "471f817188d7f3dd34492c5fd960d37f9ea96b45120a3a0594f7e23dfd03dd43",
+      "local": "resources/LICENSE.mendeleev",
+      "local_sha256": "471f817188d7f3dd34492c5fd960d37f9ea96b45120a3a0594f7e23dfd03dd43",
+      "adaptations": []
+    },
+    {
+      "upstream": "resources/MiedemaLiquidDeltaHf.tsv",
+      "upstream_sha256": "5b461ab99d7605fb8b306bda9cfe047b266ffa3e67387cb4b0ffeccaf57a5f48",
+      "local": "resources/MiedemaLiquidDeltaHf.tsv",
+      "local_sha256": "5b461ab99d7605fb8b306bda9cfe047b266ffa3e67387cb4b0ffeccaf57a5f48",
+      "adaptations": []
+    },
+    {
+      "upstream": "resources/sigma_precursors.json",
+      "upstream_sha256": "63c5b715efb35d0ba44d579789e2d3ae007bbbcad5fbf7e6bbb9c4b7b181ff13",
+      "local": "resources/sigma_precursors.json",
+      "local_sha256": "63c5b715efb35d0ba44d579789e2d3ae007bbbcad5fbf7e6bbb9c4b7b181ff13",
+      "adaptations": []
+    },
+    {
+      "upstream": "resources/solvent_reference.json",
+      "upstream_sha256": "9beec983a293bde04061b92af65eb9dbb761a6f5ffa886e1171d05a7b825fb15",
+      "local": "resources/solvent_reference.json",
+      "local_sha256": "9beec983a293bde04061b92af65eb9dbb761a6f5ffa886e1171d05a7b825fb15",
+      "adaptations": []
+    }
+  ]
+}
