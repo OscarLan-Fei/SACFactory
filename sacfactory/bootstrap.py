@@ -5,6 +5,7 @@ from pathlib import Path
 def load_demo_seed(root):
     """Load a portable fixture and restore its declared simulator inputs."""
     from .demo_preparation import restore_content
+    from .demo_icp_jitter import perturb_content
     path = Path(root) / 'examples/demo_seed.json'
     if path.is_file():
         content = json.loads(path.read_text(encoding='utf-8'))
@@ -12,13 +13,15 @@ def load_demo_seed(root):
         import gzip
         with gzip.open(str(path) + '.gz', 'rt', encoding='utf-8') as stream:
             content = json.load(stream)
-    return restore_content(content)
+    return perturb_content(restore_content(content))
 
 
 def seed(store, root):
     if store.get("meta", "seed-v1"):
         from .demo_preparation import migrate_store
         migrate_store(store)
+        from .demo_icp_jitter import migrate_store as migrate_icp_jitter
+        migrate_icp_jitter(store)
         return
     if store.origin == "REAL":
         store.put_many("meta", [{"id": "seed-v1", "origin": store.origin}], "id")
