@@ -86,10 +86,12 @@ def make_demo():
                 stem={'state':'NOT_TESTED'},notes='SIMULATED physics-linked campaign. Thermal priors, assay limits/noise and XRD surrogates are assumptions; no experimental curve fitting.',
                 demo_mass_balance=balance,demo_observation={'version':settings['version'],'settings_sha256':settings['settings_sha256'],
                     'result_basis':basis,'workflow_case':case,'assays':details,'screening_latent':latent})
+            from sacfactory.demo_preparation import restore_inputs
+            s=restore_inputs(s)
             s=validate_sample(s)
             if model is not None:
                 p=float(model.predict_proba([prediction_features(s,atoms)])[0,list(model.classes_).index(1)])
-                planned={k:copy.deepcopy(s[k]) for k in ('origin','elements','concentrations_mM','pulse_count','pulse_limit_C','precursor_family','support_batch','protocol_id','precursors')}
+                planned={k:copy.deepcopy(s[k]) for k in ('origin','elements','concentrations_mM','pulse_count','pulse_limit_C','precursor_family','support_batch','protocol_id','precursors','pan_mass_g','solvent_volume_mL','carbonization_loss_fraction')}
                 s['proposal']={'recipe':planned,'p_screen_pass':p,'created':s['result_reported_at'].split('T')[0]+'T00:00:00+00:00',
                     'model_id':fingerprint({'capture':capture,'seed':SEED,'source_hash':hashlib.sha256(Path(__file__).read_bytes()).hexdigest()}),
                     'policy':'SIMULATED_SEQUENTIAL_STAGE_RF','evaluation_capture':capture,
