@@ -1,0 +1,15 @@
+{
+  "version": "scalar-retention-residual-v1",
+  "members": 3,
+  "epochs_baseline": 100,
+  "epochs_diffusion": 220,
+  "batch_size": 64,
+  "diffusion_steps": 60,
+  "draws_per_member": 64,
+  "learning_rate": 0.001,
+  "seed": 20261014,
+  "threads": 1,
+  "calibration_coverage": 0.95,
+  "split": "Whole actual batches: 60% train, 20% calibration, remainder test",
+  "status": "Prototype budgets; no accuracy guarantee"
+}
