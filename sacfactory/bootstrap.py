@@ -3,17 +3,22 @@ from pathlib import Path
 
 
 def load_demo_seed(root):
-    """Read the bundled compressed fixture or a locally regenerated JSON file."""
+    """Load a portable fixture and restore its declared simulator inputs."""
+    from .demo_preparation import restore_content
     path = Path(root) / 'examples/demo_seed.json'
     if path.is_file():
-        return json.loads(path.read_text(encoding='utf-8'))
-    import gzip
-    with gzip.open(str(path) + '.gz', 'rt', encoding='utf-8') as stream:
-        return json.load(stream)
+        content = json.loads(path.read_text(encoding='utf-8'))
+    else:
+        import gzip
+        with gzip.open(str(path) + '.gz', 'rt', encoding='utf-8') as stream:
+            content = json.load(stream)
+    return restore_content(content)
 
 
 def seed(store, root):
     if store.get("meta", "seed-v1"):
+        from .demo_preparation import migrate_store
+        migrate_store(store)
         return
     if store.origin == "REAL":
         store.put_many("meta", [{"id": "seed-v1", "origin": store.origin}], "id")
