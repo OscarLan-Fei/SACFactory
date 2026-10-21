@@ -1,0 +1,21 @@
+flowchart TB
+    subgraph local["SACFactory: local research workbench"]
+        R["Record recipes and outcomes<br/>Elements; precursor mmol / mM; PAN / DMF<br/>Pulses; cutoff; measured ICP / XRD"]
+        F["Represent chemistry and process<br/>Chemical descriptors and missing masks<br/>Thermal retention and mass-balance priors"]
+        V["Validate on held-out observations<br/>Batch / element / recipe masks<br/>ICP errors; XRD calibration; score regression"]
+        T["Train deployment model<br/>SAC-Gen loading distribution + XRD head<br/>Save checkpoint and training identity"]
+        P["Plan the next batch<br/>Allowed ranges; acquisition objective<br/>Human review; save to pending"]
+        R --> F --> V
+        F --> T --> P
+        V -. "Choose configuration; validation is separate" .-> T
+    end
+    E["Perform experiments<br/>Synthesize; measure ICP and XRD<br/>Optional STEM confirmation"]
+    P --> E -->|"Return results; refresh evidence"| R
+    D["Separate data spaces: REAL and synthetic DEMO"] -.-> R
+    C["Optional LLM conversation<br/>Selected shared records; numerical engine remains separate"] -.-> local
+    classDef core fill:#e8f4f2,stroke:#16857f,color:#153447;
+    classDef test fill:#edf2fb,stroke:#617bb2,color:#153447;
+    classDef lab fill:#fff0df,stroke:#bf8242,color:#153447;
+    class R,F,T,P core;
+    class V,D,C test;
+    class E lab;
