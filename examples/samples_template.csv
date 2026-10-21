@@ -1,0 +1,2 @@
+﻿sample_id,batch_id,origin,target_elements,pulse_count,temperature_C,pulse_limit_C,voltage_V,current_A,precursor_family,support_batch,protocol_id,xrd_state,xrd_source,xrd_criteria,xrd_reviewer,stem_state,stem_source,stem_reviewer,stem_notes,notes,icp_state,icp_source,icp_reviewer,xrd_mode
+MY_SAMPLE_001,SYNTHESIS_BATCH_001,REAL,Fe;Co,1,1000,,,,FILL_IN_PRECURSOR,FILL_IN_SUPPORT,PULSE_IR_1000C_V1,PENDING,,,,,,,,,AUTO,,,MANUAL

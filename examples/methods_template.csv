@@ -1,0 +1,3 @@
+﻿method_id,origin,instrument,rule,element,lod_wt_percent,loq_wt_percent,confirmed,source,version
+MY_ICP_AES_V1,REAL,ICP-AES,LOQ,Fe,,,0,,v1
+MY_ICP_AES_V1,REAL,ICP-AES,LOQ,Co,,,0,,v1
