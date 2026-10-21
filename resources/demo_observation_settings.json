@@ -1,0 +1,17 @@
+{
+  "version": "physics-linked-observations-v1",
+  "parameter_status": "SIMULATION_ASSUMPTIONS_NOT_EXPERIMENTAL_LIMITS",
+  "simulated_icp_lod_wt_percent": 0.0015,
+  "simulated_icp_loq_wt_percent": 0.005,
+  "simulated_icp_log_sd": 0.02,
+  "batch_log_retention_sd": 0.015,
+  "aggregation_reference_input_mmol": 2.4,
+  "aggregation_transition_width": 0.10,
+  "mobility_temperature_coefficient": 1.5,
+  "mobility_melting_exponent": 0.25,
+  "repeat_mobility_increment": 0.12,
+  "repeat_mobility_tau": 3.0,
+  "conversion_reference_temperature_C": 900.0,
+  "conversion_transition_width_C": 35.0,
+  "note": "Assay limits/noise and XRD event probabilities are synthetic observation assumptions, not real instrument qualifications or atom-dispersion thresholds. Aggregation uses retained effective molar burden per remaining carrier, plus smooth mobility and low-temperature conversion surrogates. No sample-index-triggered metal loss."
+}

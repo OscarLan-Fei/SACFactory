@@ -1,0 +1,1865 @@
+{
+  "version": "mendeleev-1.3.0-five-properties-v1",
+  "package_version": "1.3.0",
+  "source_url": "https://pypi.org/project/mendeleev/1.3.0/",
+  "documentation": "https://mendeleev.readthedocs.io/en/stable/data.html",
+  "bibliography": "https://mendeleev.readthedocs.io/en/stable/bibliography.html",
+  "wheel_sha256": "76f415767b654634e51dead755513ef431abf200e892eab8468aa659ff218d1c",
+  "database_sha256": "8a6312b57603e22c58ab28005bb8cacfbff721bc859eea8ddc2b784c17ffd717",
+  "license": "MIT",
+  "retrieved_date": "2026-10-12",
+  "properties": {
+    "atomic_weight": {
+      "unit": "Da",
+      "reference": "mendeleev data: atomic_weight; source bibliography keys 39,73"
+    },
+    "en_pauling": {
+      "unit": "dimensionless",
+      "reference": "mendeleev data: electronegativity_pauling; source bibliography key 25"
+    },
+    "covalent_radius_cordero": {
+      "unit": "pm",
+      "reference": "mendeleev data: covalent_radius_cordero; source bibliography key 16"
+    },
+    "electron_affinity": {
+      "unit": "eV",
+      "reference": "mendeleev data: electron_affinity; source bibliography keys 6,25"
+    },
+    "first_ionization_energy": {
+      "unit": "eV",
+      "reference": "Neutral-atom ionizationenergies, ion_charge=0; per-element reference/estimated flags retained"
+    }
+  },
+  "elements": [
+    {
+      "atomic_number": 1,
+      "symbol": "H",
+      "atomic_weight": 1.008,
+      "en_pauling": 2.2,
+      "covalent_radius_cordero": 31.0,
+      "electron_affinity": 0.754195,
+      "first_ionization_energy": 13.598434599702,
+      "ionization_metadata": {
+        "ionization_energy": 13.598434599702,
+        "uncertainty": 1.2e-11,
+        "references": "HDEL",
+        "is_semi_empirical": 0,
+        "is_theoretical": 1
+      }
+    },
+    {
+      "atomic_number": 2,
+      "symbol": "He",
+      "atomic_weight": 4.002602,
+      "en_pauling": null,
+      "covalent_radius_cordero": 28.000000000000004,
+      "electron_affinity": -19.7,
+      "first_ionization_energy": 24.587389011,
+      "ionization_metadata": {
+        "ionization_energy": 24.587389011,
+        "uncertainty": 2.5e-08,
+        "references": "L17714",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 3,
+      "symbol": "Li",
+      "atomic_weight": 6.94,
+      "en_pauling": 0.98,
+      "covalent_radius_cordero": 128.0,
+      "electron_affinity": 0.618049,
+      "first_ionization_energy": 5.391714996,
+      "ionization_metadata": {
+        "ionization_energy": 5.391714996,
+        "uncertainty": 2.2e-08,
+        "references": "L12261",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 4,
+      "symbol": "Be",
+      "atomic_weight": 9.0121831,
+      "en_pauling": 1.57,
+      "covalent_radius_cordero": 96.0,
+      "electron_affinity": -2.4,
+      "first_ionization_energy": 9.322699,
+      "ionization_metadata": {
+        "ionization_energy": 9.322699,
+        "uncertainty": 7e-06,
+        "references": "L5964",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 5,
+      "symbol": "B",
+      "atomic_weight": 10.81,
+      "en_pauling": 2.04,
+      "covalent_radius_cordero": 84.0,
+      "electron_affinity": 0.279723,
+      "first_ionization_energy": 8.298019,
+      "ionization_metadata": {
+        "ionization_energy": 8.298019,
+        "uncertainty": 3e-06,
+        "references": "L12312",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 6,
+      "symbol": "C",
+      "atomic_weight": 12.011,
+      "en_pauling": 2.55,
+      "covalent_radius_cordero": 73.0,
+      "electron_affinity": 1.262119,
+      "first_ionization_energy": 11.260288,
+      "ionization_metadata": {
+        "ionization_energy": 11.260288,
+        "uncertainty": 1.1e-06,
+        "references": "L20057",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 7,
+      "symbol": "N",
+      "atomic_weight": 14.007,
+      "en_pauling": 3.04,
+      "covalent_radius_cordero": 71.0,
+      "electron_affinity": -1.4,
+      "first_ionization_energy": 14.53413,
+      "ionization_metadata": {
+        "ionization_energy": 14.53413,
+        "uncertainty": 4e-05,
+        "references": "L1411",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 8,
+      "symbol": "O",
+      "atomic_weight": 15.999,
+      "en_pauling": 3.44,
+      "covalent_radius_cordero": 66.0,
+      "electron_affinity": 1.4611135,
+      "first_ionization_energy": 13.618055,
+      "ionization_metadata": {
+        "ionization_energy": 13.618055,
+        "uncertainty": 7e-06,
+        "references": "L74,L3760",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 9,
+      "symbol": "F",
+      "atomic_weight": 18.998403163,
+      "en_pauling": 3.98,
+      "covalent_radius_cordero": 56.99999999999999,
+      "electron_affinity": 3.4011897000000006,
+      "first_ionization_energy": 17.42282,
+      "ionization_metadata": {
+        "ionization_energy": 17.42282,
+        "uncertainty": 5e-05,
+        "references": "L7481,L526",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 10,
+      "symbol": "Ne",
+      "atomic_weight": 20.1797,
+      "en_pauling": null,
+      "covalent_radius_cordero": 57.99999999999999,
+      "electron_affinity": null,
+      "first_ionization_energy": 21.564541,
+      "ionization_metadata": {
+        "ionization_energy": 21.564541,
+        "uncertainty": 7e-06,
+        "references": "L8826,L1407",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 11,
+      "symbol": "Na",
+      "atomic_weight": 22.98976928,
+      "en_pauling": 0.93,
+      "covalent_radius_cordero": 166.0,
+      "electron_affinity": 0.547926,
+      "first_ionization_energy": 5.13907696,
+      "ionization_metadata": {
+        "ionization_energy": 5.13907696,
+        "uncertainty": 2.5e-07,
+        "references": "L10921,L9648",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 12,
+      "symbol": "Mg",
+      "atomic_weight": 24.305,
+      "en_pauling": 1.31,
+      "covalent_radius_cordero": 141.0,
+      "electron_affinity": null,
+      "first_ionization_energy": 7.646236,
+      "ionization_metadata": {
+        "ionization_energy": 7.646236,
+        "uncertainty": 4e-06,
+        "references": "L10635,L6969",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 13,
+      "symbol": "Al",
+      "atomic_weight": 26.9815385,
+      "en_pauling": 1.61,
+      "covalent_radius_cordero": 121.0,
+      "electron_affinity": 0.43283,
+      "first_ionization_energy": 5.985769,
+      "ionization_metadata": {
+        "ionization_energy": 5.985769,
+        "uncertainty": 3e-06,
+        "references": "L7215,L10321",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 14,
+      "symbol": "Si",
+      "atomic_weight": 28.085,
+      "en_pauling": 1.9,
+      "covalent_radius_cordero": 111.00000000000001,
+      "electron_affinity": 1.3895211,
+      "first_ionization_energy": 8.15168,
+      "ionization_metadata": {
+        "ionization_energy": 8.15168,
+        "uncertainty": 3e-05,
+        "references": "L5815",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 15,
+      "symbol": "P",
+      "atomic_weight": 30.973761998,
+      "en_pauling": 2.19,
+      "covalent_radius_cordero": 107.0,
+      "electron_affinity": 0.746607,
+      "first_ionization_energy": 10.486686,
+      "ionization_metadata": {
+        "ionization_energy": 10.486686,
+        "uncertainty": 1.5e-05,
+        "references": "L5148",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 16,
+      "symbol": "S",
+      "atomic_weight": 32.06,
+      "en_pauling": 2.58,
+      "covalent_radius_cordero": 105.0,
+      "electron_affinity": 2.07710403,
+      "first_ionization_energy": 10.36001,
+      "ionization_metadata": {
+        "ionization_energy": 10.36001,
+        "uncertainty": 0.00012,
+        "references": "L7237",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 17,
+      "symbol": "Cl",
+      "atomic_weight": 35.45,
+      "en_pauling": 3.16,
+      "covalent_radius_cordero": 102.0,
+      "electron_affinity": 3.612725,
+      "first_ionization_energy": 12.967633,
+      "ionization_metadata": {
+        "ionization_energy": 12.967633,
+        "uncertainty": 1.6e-05,
+        "references": "L19191",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 18,
+      "symbol": "Ar",
+      "atomic_weight": 39.948,
+      "en_pauling": null,
+      "covalent_radius_cordero": 106.0,
+      "electron_affinity": -11.5,
+      "first_ionization_energy": 15.7596119,
+      "ionization_metadata": {
+        "ionization_energy": 15.7596119,
+        "uncertainty": 5e-07,
+        "references": "L9217",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 19,
+      "symbol": "K",
+      "atomic_weight": 39.0983,
+      "en_pauling": 0.82,
+      "covalent_radius_cordero": 202.99999999999997,
+      "electron_affinity": 0.50147,
+      "first_ionization_energy": 4.34066373,
+      "ionization_metadata": {
+        "ionization_energy": 4.34066373,
+        "uncertainty": 9e-08,
+        "references": "L5451,L5783,L7185",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 20,
+      "symbol": "Ca",
+      "atomic_weight": 40.078,
+      "en_pauling": 1.0,
+      "covalent_radius_cordero": 176.0,
+      "electron_affinity": 0.02455,
+      "first_ionization_energy": 6.11315547,
+      "ionization_metadata": {
+        "ionization_energy": 6.11315547,
+        "uncertainty": 2.5e-07,
+        "references": "L8900",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 21,
+      "symbol": "Sc",
+      "atomic_weight": 44.955908,
+      "en_pauling": 1.36,
+      "covalent_radius_cordero": 170.0,
+      "electron_affinity": 0.188,
+      "first_ionization_energy": 6.56149,
+      "ionization_metadata": {
+        "ionization_energy": 6.56149,
+        "uncertainty": 6e-05,
+        "references": "L7185,L2110",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 22,
+      "symbol": "Ti",
+      "atomic_weight": 47.867,
+      "en_pauling": 1.54,
+      "covalent_radius_cordero": 160.0,
+      "electron_affinity": 0.079,
+      "first_ionization_energy": 6.82812,
+      "ionization_metadata": {
+        "ionization_energy": 6.82812,
+        "uncertainty": 1.2e-05,
+        "references": "L17996",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 23,
+      "symbol": "V",
+      "atomic_weight": 50.9415,
+      "en_pauling": 1.63,
+      "covalent_radius_cordero": 153.0,
+      "electron_affinity": 0.525,
+      "first_ionization_energy": 6.746187,
+      "ionization_metadata": {
+        "ionization_energy": 6.746187,
+        "uncertainty": 2.1e-05,
+        "references": "L17712,L20010",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 24,
+      "symbol": "Cr",
+      "atomic_weight": 51.9961,
+      "en_pauling": 1.66,
+      "covalent_radius_cordero": 139.0,
+      "electron_affinity": 0.6659999999999999,
+      "first_ionization_energy": 6.76651,
+      "ionization_metadata": {
+        "ionization_energy": 6.76651,
+        "uncertainty": 4e-05,
+        "references": "L7185,L2832",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 25,
+      "symbol": "Mn",
+      "atomic_weight": 54.938044,
+      "en_pauling": 1.55,
+      "covalent_radius_cordero": 150.0,
+      "electron_affinity": null,
+      "first_ionization_energy": 7.434038,
+      "ionization_metadata": {
+        "ionization_energy": 7.434038,
+        "uncertainty": 1.2e-06,
+        "references": "L19057",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 26,
+      "symbol": "Fe",
+      "atomic_weight": 55.845,
+      "en_pauling": 1.83,
+      "covalent_radius_cordero": 142.0,
+      "electron_affinity": 0.151,
+      "first_ionization_energy": 7.9024681,
+      "ionization_metadata": {
+        "ionization_energy": 7.9024681,
+        "uncertainty": 1.2e-06,
+        "references": "L7743c109",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 27,
+      "symbol": "Co",
+      "atomic_weight": 58.933194,
+      "en_pauling": 1.88,
+      "covalent_radius_cordero": 138.0,
+      "electron_affinity": 0.66225646,
+      "first_ionization_energy": 7.88101,
+      "ionization_metadata": {
+        "ionization_energy": 7.88101,
+        "uncertainty": 0.00012,
+        "references": "L10545",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 28,
+      "symbol": "Ni",
+      "atomic_weight": 58.6934,
+      "en_pauling": 1.91,
+      "covalent_radius_cordero": 124.0,
+      "electron_affinity": 1.156,
+      "first_ionization_energy": 7.639878,
+      "ionization_metadata": {
+        "ionization_energy": 7.639878,
+        "uncertainty": 1.7e-05,
+        "references": "L12369",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 29,
+      "symbol": "Cu",
+      "atomic_weight": 63.546,
+      "en_pauling": 1.9,
+      "covalent_radius_cordero": 132.0,
+      "electron_affinity": 1.235,
+      "first_ionization_energy": 7.72638,
+      "ionization_metadata": {
+        "ionization_energy": 7.72638,
+        "uncertainty": 4e-06,
+        "references": "L14897",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 30,
+      "symbol": "Zn",
+      "atomic_weight": 65.38,
+      "en_pauling": 1.65,
+      "covalent_radius_cordero": 122.0,
+      "electron_affinity": null,
+      "first_ionization_energy": 9.394197,
+      "ionization_metadata": {
+        "ionization_energy": 9.394197,
+        "uncertainty": 6e-06,
+        "references": "L13951",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 31,
+      "symbol": "Ga",
+      "atomic_weight": 69.723,
+      "en_pauling": 1.81,
+      "covalent_radius_cordero": 122.0,
+      "electron_affinity": 0.43,
+      "first_ionization_energy": 5.999302,
+      "ionization_metadata": {
+        "ionization_energy": 5.999302,
+        "uncertainty": 1.2e-06,
+        "references": "L5566",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 32,
+      "symbol": "Ge",
+      "atomic_weight": 72.63,
+      "en_pauling": 2.01,
+      "covalent_radius_cordero": 120.0,
+      "electron_affinity": 1.232712,
+      "first_ionization_energy": 7.899435,
+      "ionization_metadata": {
+        "ionization_energy": 7.899435,
+        "uncertainty": 1.2e-05,
+        "references": "L3935,L12369",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 33,
+      "symbol": "As",
+      "atomic_weight": 74.921595,
+      "en_pauling": 2.18,
+      "covalent_radius_cordero": 119.0,
+      "electron_affinity": 0.804,
+      "first_ionization_energy": 9.78855,
+      "ionization_metadata": {
+        "ionization_energy": 9.78855,
+        "uncertainty": 0.00025,
+        "references": "L1351",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 34,
+      "symbol": "Se",
+      "atomic_weight": 78.971,
+      "en_pauling": 2.55,
+      "covalent_radius_cordero": 120.0,
+      "electron_affinity": 2.02067,
+      "first_ionization_energy": 9.752368,
+      "ionization_metadata": {
+        "ionization_energy": 9.752368,
+        "uncertainty": 6e-06,
+        "references": "L21645",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 35,
+      "symbol": "Br",
+      "atomic_weight": 79.904,
+      "en_pauling": 2.96,
+      "covalent_radius_cordero": 120.0,
+      "electron_affinity": 3.3635882000000006,
+      "first_ionization_energy": 11.81381,
+      "ionization_metadata": {
+        "ionization_energy": 11.81381,
+        "uncertainty": 6e-05,
+        "references": "L351,L67",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 36,
+      "symbol": "Kr",
+      "atomic_weight": 83.798,
+      "en_pauling": null,
+      "covalent_radius_cordero": 115.99999999999999,
+      "electron_affinity": null,
+      "first_ionization_energy": 13.9996055,
+      "ionization_metadata": {
+        "ionization_energy": 13.9996055,
+        "uncertainty": 2e-06,
+        "references": "L12196",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 37,
+      "symbol": "Rb",
+      "atomic_weight": 85.4678,
+      "en_pauling": 0.82,
+      "covalent_radius_cordero": 220.00000000000003,
+      "electron_affinity": 0.48591999999999996,
+      "first_ionization_energy": 4.1771281,
+      "ionization_metadata": {
+        "ionization_energy": 4.1771281,
+        "uncertainty": 1.2e-06,
+        "references": "L4740,L5783",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 38,
+      "symbol": "Sr",
+      "atomic_weight": 87.62,
+      "en_pauling": 0.95,
+      "covalent_radius_cordero": 195.0,
+      "electron_affinity": 0.048,
+      "first_ionization_energy": 5.69486745,
+      "ionization_metadata": {
+        "ionization_energy": 5.69486745,
+        "uncertainty": 1.2e-07,
+        "references": "L15350,L5644",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 39,
+      "symbol": "Y",
+      "atomic_weight": 88.90584,
+      "en_pauling": 1.22,
+      "covalent_radius_cordero": 190.0,
+      "electron_affinity": 0.307,
+      "first_ionization_energy": 6.21726,
+      "ionization_metadata": {
+        "ionization_energy": 6.21726,
+        "uncertainty": 0.0001,
+        "references": "L8844,L2111,L9735",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 40,
+      "symbol": "Zr",
+      "atomic_weight": 91.224,
+      "en_pauling": 1.33,
+      "covalent_radius_cordero": 175.0,
+      "electron_affinity": 0.426,
+      "first_ionization_energy": 6.634126,
+      "ionization_metadata": {
+        "ionization_energy": 6.634126,
+        "uncertainty": 5e-06,
+        "references": "L21107",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 41,
+      "symbol": "Nb",
+      "atomic_weight": 92.90637,
+      "en_pauling": 1.6,
+      "covalent_radius_cordero": 164.0,
+      "electron_affinity": 0.917406,
+      "first_ionization_energy": 6.75885,
+      "ionization_metadata": {
+        "ionization_energy": 6.75885,
+        "uncertainty": 4e-05,
+        "references": "L6829",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 42,
+      "symbol": "Mo",
+      "atomic_weight": 95.95,
+      "en_pauling": 2.16,
+      "covalent_radius_cordero": 154.0,
+      "electron_affinity": 0.748,
+      "first_ionization_energy": 7.09243,
+      "ionization_metadata": {
+        "ionization_energy": 7.09243,
+        "uncertainty": 4e-05,
+        "references": "L6829",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 43,
+      "symbol": "Tc",
+      "atomic_weight": 97.90721,
+      "en_pauling": 2.1,
+      "covalent_radius_cordero": 147.0,
+      "electron_affinity": 0.55,
+      "first_ionization_energy": 7.11938,
+      "ionization_metadata": {
+        "ionization_energy": 7.11938,
+        "uncertainty": 3e-05,
+        "references": "L15237",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 44,
+      "symbol": "Ru",
+      "atomic_weight": 101.07,
+      "en_pauling": 2.2,
+      "covalent_radius_cordero": 146.0,
+      "electron_affinity": 1.05,
+      "first_ionization_energy": 7.3605,
+      "ionization_metadata": {
+        "ionization_energy": 7.3605,
+        "uncertainty": 5e-05,
+        "references": "L10032",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 45,
+      "symbol": "Rh",
+      "atomic_weight": 102.9055,
+      "en_pauling": 2.28,
+      "covalent_radius_cordero": 142.0,
+      "electron_affinity": 1.137,
+      "first_ionization_energy": 7.4589,
+      "ionization_metadata": {
+        "ionization_energy": 7.4589,
+        "uncertainty": 5e-05,
+        "references": "L10032",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 46,
+      "symbol": "Pd",
+      "atomic_weight": 106.42,
+      "en_pauling": 2.2,
+      "covalent_radius_cordero": 139.0,
+      "electron_affinity": 0.562,
+      "first_ionization_energy": 8.336839,
+      "ionization_metadata": {
+        "ionization_energy": 8.336839,
+        "uncertainty": 1e-05,
+        "references": "L20363",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 47,
+      "symbol": "Ag",
+      "atomic_weight": 107.8682,
+      "en_pauling": 1.93,
+      "covalent_radius_cordero": 145.0,
+      "electron_affinity": 1.3019999999999998,
+      "first_ionization_energy": 7.576234,
+      "ionization_metadata": {
+        "ionization_energy": 7.576234,
+        "uncertainty": 2.5e-05,
+        "references": "L11835",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 48,
+      "symbol": "Cd",
+      "atomic_weight": 112.414,
+      "en_pauling": 1.69,
+      "covalent_radius_cordero": 144.0,
+      "electron_affinity": null,
+      "first_ionization_energy": 8.99382,
+      "ionization_metadata": {
+        "ionization_energy": 8.99382,
+        "uncertainty": 1.6e-05,
+        "references": "L18843",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 49,
+      "symbol": "In",
+      "atomic_weight": 114.818,
+      "en_pauling": 1.78,
+      "covalent_radius_cordero": 142.0,
+      "electron_affinity": 0.3,
+      "first_ionization_energy": 5.7863558,
+      "ionization_metadata": {
+        "ionization_energy": 5.7863558,
+        "uncertainty": 5e-07,
+        "references": "L21649",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 50,
+      "symbol": "Sn",
+      "atomic_weight": 118.71,
+      "en_pauling": 1.96,
+      "covalent_radius_cordero": 139.0,
+      "electron_affinity": 1.112067,
+      "first_ionization_energy": 7.343918,
+      "ionization_metadata": {
+        "ionization_energy": 7.343918,
+        "uncertainty": 1.2e-05,
+        "references": "L3936",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 51,
+      "symbol": "Sb",
+      "atomic_weight": 121.76,
+      "en_pauling": 2.05,
+      "covalent_radius_cordero": 139.0,
+      "electron_affinity": 1.046,
+      "first_ionization_energy": 8.608389,
+      "ionization_metadata": {
+        "ionization_energy": 8.608389,
+        "uncertainty": 1.2e-05,
+        "references": "L8844,L6684",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 52,
+      "symbol": "Te",
+      "atomic_weight": 127.6,
+      "en_pauling": 2.1,
+      "covalent_radius_cordero": 138.0,
+      "electron_affinity": 1.9708759999999999,
+      "first_ionization_energy": 9.009808,
+      "ionization_metadata": {
+        "ionization_energy": 9.009808,
+        "uncertainty": 6e-06,
+        "references": "L21109",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 53,
+      "symbol": "I",
+      "atomic_weight": 126.90447,
+      "en_pauling": 2.66,
+      "covalent_radius_cordero": 139.0,
+      "electron_affinity": 3.0590368,
+      "first_ionization_energy": 10.451236,
+      "ionization_metadata": {
+        "ionization_energy": 10.451236,
+        "uncertainty": 2.5e-05,
+        "references": "L13998,L22518",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 54,
+      "symbol": "Xe",
+      "atomic_weight": 131.293,
+      "en_pauling": 2.6,
+      "covalent_radius_cordero": 140.0,
+      "electron_affinity": -0.055999999999999994,
+      "first_ionization_energy": 12.1298437,
+      "ionization_metadata": {
+        "ionization_energy": 12.1298437,
+        "uncertainty": 1.5e-06,
+        "references": "L12013,L9794,L6426",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 55,
+      "symbol": "Cs",
+      "atomic_weight": 132.90545196,
+      "en_pauling": 0.79,
+      "covalent_radius_cordero": 244.0,
+      "electron_affinity": 0.47162600000000005,
+      "first_ionization_energy": 3.89390572743,
+      "ionization_metadata": {
+        "ionization_energy": 3.89390572743,
+        "uncertainty": 1.7e-10,
+        "references": "L19479",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 56,
+      "symbol": "Ba",
+      "atomic_weight": 137.327,
+      "en_pauling": 0.89,
+      "covalent_radius_cordero": 215.0,
+      "electron_affinity": 0.14462,
+      "first_ionization_energy": 5.2116646,
+      "ionization_metadata": {
+        "ionization_energy": 5.2116646,
+        "uncertainty": 1.2e-06,
+        "references": "L6347,L9224",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 57,
+      "symbol": "La",
+      "atomic_weight": 138.90547,
+      "en_pauling": 1.1,
+      "covalent_radius_cordero": 206.99999999999997,
+      "electron_affinity": 0.47,
+      "first_ionization_energy": 5.5769,
+      "ionization_metadata": {
+        "ionization_energy": 5.5769,
+        "uncertainty": 0.0006,
+        "references": "L3974,L16228",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 58,
+      "symbol": "Ce",
+      "atomic_weight": 140.116,
+      "en_pauling": 1.12,
+      "covalent_radius_cordero": 204.0,
+      "electron_affinity": 0.65,
+      "first_ionization_energy": 5.5386,
+      "ionization_metadata": {
+        "ionization_energy": 5.5386,
+        "uncertainty": 0.0004,
+        "references": "L4277",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 59,
+      "symbol": "Pr",
+      "atomic_weight": 140.90766,
+      "en_pauling": 1.13,
+      "covalent_radius_cordero": 202.99999999999997,
+      "electron_affinity": 0.9620000000000001,
+      "first_ionization_energy": 5.4702,
+      "ionization_metadata": {
+        "ionization_energy": 5.4702,
+        "uncertainty": 0.0004,
+        "references": "L19006",
+        "is_semi_empirical": 1,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 60,
+      "symbol": "Nd",
+      "atomic_weight": 144.242,
+      "en_pauling": 1.14,
+      "covalent_radius_cordero": 200.99999999999997,
+      "electron_affinity": 1.916,
+      "first_ionization_energy": 5.525,
+      "ionization_metadata": {
+        "ionization_energy": 5.525,
+        "uncertainty": 0.0006,
+        "references": "L4277",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 61,
+      "symbol": "Pm",
+      "atomic_weight": 144.91276,
+      "en_pauling": null,
+      "covalent_radius_cordero": 199.0,
+      "electron_affinity": null,
+      "first_ionization_energy": 5.58187,
+      "ionization_metadata": {
+        "ionization_energy": 5.58187,
+        "uncertainty": 4e-05,
+        "references": "L20992",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 62,
+      "symbol": "Sm",
+      "atomic_weight": 150.36,
+      "en_pauling": 1.17,
+      "covalent_radius_cordero": 198.0,
+      "electron_affinity": null,
+      "first_ionization_energy": 5.643722,
+      "ionization_metadata": {
+        "ionization_energy": 5.643722,
+        "uncertainty": 2.1e-05,
+        "references": "L21624",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 63,
+      "symbol": "Eu",
+      "atomic_weight": 151.964,
+      "en_pauling": null,
+      "covalent_radius_cordero": 198.0,
+      "electron_affinity": 0.8640000000000001,
+      "first_ionization_energy": 5.670385,
+      "ionization_metadata": {
+        "ionization_energy": 5.670385,
+        "uncertainty": 5e-06,
+        "references": "L13382",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 64,
+      "symbol": "Gd",
+      "atomic_weight": 157.25,
+      "en_pauling": 1.2,
+      "covalent_radius_cordero": 196.0,
+      "electron_affinity": null,
+      "first_ionization_energy": 6.1498,
+      "ionization_metadata": {
+        "ionization_energy": 6.1498,
+        "uncertainty": 4e-05,
+        "references": "L11798",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 65,
+      "symbol": "Tb",
+      "atomic_weight": 158.92535,
+      "en_pauling": null,
+      "covalent_radius_cordero": 194.0,
+      "electron_affinity": 1.165,
+      "first_ionization_energy": 5.8638,
+      "ionization_metadata": {
+        "ionization_energy": 5.8638,
+        "uncertainty": 0.0006,
+        "references": "L4277",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 66,
+      "symbol": "Dy",
+      "atomic_weight": 162.5,
+      "en_pauling": 1.22,
+      "covalent_radius_cordero": 192.0,
+      "electron_affinity": 0.35200000000000004,
+      "first_ionization_energy": 5.939061,
+      "ionization_metadata": {
+        "ionization_energy": 5.939061,
+        "uncertainty": 6e-06,
+        "references": "L22122",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 67,
+      "symbol": "Ho",
+      "atomic_weight": 164.93033,
+      "en_pauling": 1.23,
+      "covalent_radius_cordero": 192.0,
+      "electron_affinity": null,
+      "first_ionization_energy": 6.0215,
+      "ionization_metadata": {
+        "ionization_energy": 6.0215,
+        "uncertainty": 0.0006,
+        "references": "L4277",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 68,
+      "symbol": "Er",
+      "atomic_weight": 167.259,
+      "en_pauling": 1.24,
+      "covalent_radius_cordero": 189.0,
+      "electron_affinity": null,
+      "first_ionization_energy": 6.1077,
+      "ionization_metadata": {
+        "ionization_energy": 6.1077,
+        "uncertainty": 0.001,
+        "references": "L4277",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 69,
+      "symbol": "Tm",
+      "atomic_weight": 168.93422,
+      "en_pauling": 1.25,
+      "covalent_radius_cordero": 190.0,
+      "electron_affinity": 1.0290000000000001,
+      "first_ionization_energy": 6.184402,
+      "ionization_metadata": {
+        "ionization_energy": 6.184402,
+        "uncertainty": 9e-06,
+        "references": "L22274",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 70,
+      "symbol": "Yb",
+      "atomic_weight": 173.045,
+      "en_pauling": null,
+      "covalent_radius_cordero": 187.0,
+      "electron_affinity": -0.02,
+      "first_ionization_energy": 6.25416,
+      "ionization_metadata": {
+        "ionization_energy": 6.25416,
+        "uncertainty": 1.2e-05,
+        "references": "L4980",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 71,
+      "symbol": "Lu",
+      "atomic_weight": 174.9668,
+      "en_pauling": 1.0,
+      "covalent_radius_cordero": 187.0,
+      "electron_affinity": 0.34,
+      "first_ionization_energy": 5.425871,
+      "ionization_metadata": {
+        "ionization_energy": 5.425871,
+        "uncertainty": 1.2e-05,
+        "references": "L10494,L1638",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 72,
+      "symbol": "Hf",
+      "atomic_weight": 178.49,
+      "en_pauling": 1.3,
+      "covalent_radius_cordero": 175.0,
+      "electron_affinity": 0.013999999999999999,
+      "first_ionization_energy": 6.82507,
+      "ionization_metadata": {
+        "ionization_energy": 6.82507,
+        "uncertainty": 1.2e-05,
+        "references": "L14027,L10033",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 73,
+      "symbol": "Ta",
+      "atomic_weight": 180.94788,
+      "en_pauling": 1.5,
+      "covalent_radius_cordero": 170.0,
+      "electron_affinity": 0.322,
+      "first_ionization_energy": 7.549571,
+      "ionization_metadata": {
+        "ionization_energy": 7.549571,
+        "uncertainty": 2.5e-05,
+        "references": "L13153",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 74,
+      "symbol": "W",
+      "atomic_weight": 183.84,
+      "en_pauling": 1.7,
+      "covalent_radius_cordero": 162.0,
+      "electron_affinity": 0.81626,
+      "first_ionization_energy": 7.86403,
+      "ionization_metadata": {
+        "ionization_energy": 7.86403,
+        "uncertainty": 0.0001,
+        "references": "L11604",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 75,
+      "symbol": "Re",
+      "atomic_weight": 186.207,
+      "en_pauling": 1.9,
+      "covalent_radius_cordero": 151.0,
+      "electron_affinity": 0.15,
+      "first_ionization_energy": 7.83352,
+      "ionization_metadata": {
+        "ionization_energy": 7.83352,
+        "uncertainty": 0.00011,
+        "references": "L11604",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 76,
+      "symbol": "Os",
+      "atomic_weight": 190.23,
+      "en_pauling": 2.2,
+      "covalent_radius_cordero": 144.0,
+      "electron_affinity": 1.1,
+      "first_ionization_energy": 8.43823,
+      "ionization_metadata": {
+        "ionization_energy": 8.43823,
+        "uncertainty": 0.0002,
+        "references": "L8105",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 77,
+      "symbol": "Ir",
+      "atomic_weight": 192.217,
+      "en_pauling": 2.2,
+      "covalent_radius_cordero": 141.0,
+      "electron_affinity": 1.5638,
+      "first_ionization_energy": 8.96702,
+      "ionization_metadata": {
+        "ionization_energy": 8.96702,
+        "uncertainty": 0.00022,
+        "references": "L8105",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 78,
+      "symbol": "Pt",
+      "atomic_weight": 195.084,
+      "en_pauling": 2.2,
+      "covalent_radius_cordero": 136.0,
+      "electron_affinity": 2.128,
+      "first_ionization_energy": 8.95883,
+      "ionization_metadata": {
+        "ionization_energy": 8.95883,
+        "uncertainty": 0.0001,
+        "references": "L9735,L11689",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 79,
+      "symbol": "Au",
+      "atomic_weight": 196.966569,
+      "en_pauling": 2.4,
+      "covalent_radius_cordero": 136.0,
+      "electron_affinity": 2.30863,
+      "first_ionization_energy": 9.225554,
+      "ionization_metadata": {
+        "ionization_energy": 9.225554,
+        "uncertainty": 4e-06,
+        "references": "L12088",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 80,
+      "symbol": "Hg",
+      "atomic_weight": 200.592,
+      "en_pauling": 1.9,
+      "covalent_radius_cordero": 132.0,
+      "electron_affinity": null,
+      "first_ionization_energy": 10.437504,
+      "ionization_metadata": {
+        "ionization_energy": 10.437504,
+        "uncertainty": 6e-06,
+        "references": "L11931,L11984",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 81,
+      "symbol": "Tl",
+      "atomic_weight": 204.38,
+      "en_pauling": 1.8,
+      "covalent_radius_cordero": 145.0,
+      "electron_affinity": 0.377,
+      "first_ionization_energy": 6.1082873,
+      "ionization_metadata": {
+        "ionization_energy": 6.1082873,
+        "uncertainty": 1.2e-06,
+        "references": "L16353",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 82,
+      "symbol": "Pb",
+      "atomic_weight": 207.2,
+      "en_pauling": 1.8,
+      "covalent_radius_cordero": 146.0,
+      "electron_affinity": 0.35674316,
+      "first_ionization_energy": 7.4166799,
+      "ionization_metadata": {
+        "ionization_energy": 7.4166799,
+        "uncertainty": 6e-07,
+        "references": "L11569",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 83,
+      "symbol": "Bi",
+      "atomic_weight": 208.9804,
+      "en_pauling": 1.9,
+      "covalent_radius_cordero": 148.0,
+      "electron_affinity": 0.942362,
+      "first_ionization_energy": 7.285516,
+      "ionization_metadata": {
+        "ionization_energy": 7.285516,
+        "uncertainty": 6e-06,
+        "references": "L10664,L6247",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 84,
+      "symbol": "Po",
+      "atomic_weight": 209.0,
+      "en_pauling": 2.0,
+      "covalent_radius_cordero": 140.0,
+      "electron_affinity": 1.9,
+      "first_ionization_energy": 8.41807,
+      "ionization_metadata": {
+        "ionization_energy": 8.41807,
+        "uncertainty": 4e-06,
+        "references": "L20887,L20886",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 85,
+      "symbol": "At",
+      "atomic_weight": 210.0,
+      "en_pauling": 2.2,
+      "covalent_radius_cordero": 150.0,
+      "electron_affinity": 2.8,
+      "first_ionization_energy": 9.31751,
+      "ionization_metadata": {
+        "ionization_energy": 9.31751,
+        "uncertainty": 8e-05,
+        "references": "L18394",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 86,
+      "symbol": "Rn",
+      "atomic_weight": 222.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": 150.0,
+      "electron_affinity": null,
+      "first_ionization_energy": 10.7485,
+      "ionization_metadata": {
+        "ionization_energy": 10.7485,
+        "uncertainty": null,
+        "references": "L272,L7432",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 87,
+      "symbol": "Fr",
+      "atomic_weight": 223.0,
+      "en_pauling": 0.7,
+      "covalent_radius_cordero": 260.0,
+      "electron_affinity": 0.486,
+      "first_ionization_energy": 4.0727411,
+      "ionization_metadata": {
+        "ionization_energy": 4.0727411,
+        "uncertainty": 1.1e-06,
+        "references": "L10714",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 88,
+      "symbol": "Ra",
+      "atomic_weight": 226.0,
+      "en_pauling": 0.9,
+      "covalent_radius_cordero": 221.0,
+      "electron_affinity": 0.1,
+      "first_ionization_energy": 5.2784239,
+      "ionization_metadata": {
+        "ionization_energy": 5.2784239,
+        "uncertainty": 2.5e-06,
+        "references": "L4979",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 89,
+      "symbol": "Ac",
+      "atomic_weight": 227.0,
+      "en_pauling": 1.1,
+      "covalent_radius_cordero": 215.0,
+      "electron_affinity": 0.35,
+      "first_ionization_energy": 5.380235,
+      "ionization_metadata": {
+        "ionization_energy": 5.380235,
+        "uncertainty": 1.2e-05,
+        "references": "L22136,L17893",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 90,
+      "symbol": "Th",
+      "atomic_weight": 232.0377,
+      "en_pauling": 1.3,
+      "covalent_radius_cordero": 206.0,
+      "electron_affinity": null,
+      "first_ionization_energy": 6.3067,
+      "ionization_metadata": {
+        "ionization_energy": 6.3067,
+        "uncertainty": 0.00025,
+        "references": "L15992",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 91,
+      "symbol": "Pa",
+      "atomic_weight": 231.03588,
+      "en_pauling": 1.5,
+      "covalent_radius_cordero": 200.0,
+      "electron_affinity": null,
+      "first_ionization_energy": 5.89,
+      "ionization_metadata": {
+        "ionization_energy": 5.89,
+        "uncertainty": 0.12,
+        "references": "L16359",
+        "is_semi_empirical": 1,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 92,
+      "symbol": "U",
+      "atomic_weight": 238.02891,
+      "en_pauling": 1.7,
+      "covalent_radius_cordero": 196.0,
+      "electron_affinity": null,
+      "first_ionization_energy": 6.19405,
+      "ionization_metadata": {
+        "ionization_energy": 6.19405,
+        "uncertainty": 6e-05,
+        "references": "L5494,L7765",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 93,
+      "symbol": "Np",
+      "atomic_weight": 237.0,
+      "en_pauling": 1.3,
+      "covalent_radius_cordero": 190.0,
+      "electron_affinity": null,
+      "first_ionization_energy": 6.26554,
+      "ionization_metadata": {
+        "ionization_energy": 6.26554,
+        "uncertainty": 0.00025,
+        "references": "L15992",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 94,
+      "symbol": "Pu",
+      "atomic_weight": 244.0,
+      "en_pauling": 1.3,
+      "covalent_radius_cordero": 187.0,
+      "electron_affinity": null,
+      "first_ionization_energy": 6.02576,
+      "ionization_metadata": {
+        "ionization_energy": 6.02576,
+        "uncertainty": 0.00025,
+        "references": "L15992,L11260",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 95,
+      "symbol": "Am",
+      "atomic_weight": 243.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": 180.0,
+      "electron_affinity": null,
+      "first_ionization_energy": 5.97381,
+      "ionization_metadata": {
+        "ionization_energy": 5.97381,
+        "uncertainty": 0.00025,
+        "references": "L15992",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 96,
+      "symbol": "Cm",
+      "atomic_weight": 247.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": 169.0,
+      "electron_affinity": null,
+      "first_ionization_energy": 5.992241,
+      "ionization_metadata": {
+        "ionization_energy": 5.992241,
+        "uncertainty": 2e-05,
+        "references": "L22423",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 97,
+      "symbol": "Bk",
+      "atomic_weight": 247.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": 6.19785,
+      "ionization_metadata": {
+        "ionization_energy": 6.19785,
+        "uncertainty": 0.00025,
+        "references": "L15992",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 98,
+      "symbol": "Cf",
+      "atomic_weight": 251.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": 6.281878,
+      "ionization_metadata": {
+        "ionization_energy": 6.281878,
+        "uncertainty": 6e-06,
+        "references": "L22260",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 99,
+      "symbol": "Es",
+      "atomic_weight": 252.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": 6.3684,
+      "ionization_metadata": {
+        "ionization_energy": 6.3684,
+        "uncertainty": 6e-05,
+        "references": "L22449",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 100,
+      "symbol": "Fm",
+      "atomic_weight": 257.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": 6.5,
+      "ionization_metadata": {
+        "ionization_energy": 6.5,
+        "uncertainty": 0.07,
+        "references": "L16359",
+        "is_semi_empirical": 1,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 101,
+      "symbol": "Md",
+      "atomic_weight": 258.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": 6.58,
+      "ionization_metadata": {
+        "ionization_energy": 6.58,
+        "uncertainty": 0.07,
+        "references": "L16359",
+        "is_semi_empirical": 1,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 102,
+      "symbol": "No",
+      "atomic_weight": 259.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": 6.62621,
+      "ionization_metadata": {
+        "ionization_energy": 6.62621,
+        "uncertainty": 5e-05,
+        "references": "L20870",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 103,
+      "symbol": "Lr",
+      "atomic_weight": 262.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": 4.96,
+      "ionization_metadata": {
+        "ionization_energy": 4.96,
+        "uncertainty": 0.05,
+        "references": "L21372",
+        "is_semi_empirical": 0,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 104,
+      "symbol": "Rf",
+      "atomic_weight": 267.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": 6.02,
+      "ionization_metadata": {
+        "ionization_energy": 6.02,
+        "uncertainty": 0.04,
+        "references": "L19691",
+        "is_semi_empirical": 0,
+        "is_theoretical": 1
+      }
+    },
+    {
+      "atomic_number": 105,
+      "symbol": "Db",
+      "atomic_weight": 268.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": 6.8,
+      "ionization_metadata": {
+        "ionization_energy": 6.8,
+        "uncertainty": 0.5,
+        "references": "L12825",
+        "is_semi_empirical": 0,
+        "is_theoretical": 1
+      }
+    },
+    {
+      "atomic_number": 106,
+      "symbol": "Sg",
+      "atomic_weight": 271.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": 7.8,
+      "ionization_metadata": {
+        "ionization_energy": 7.8,
+        "uncertainty": 0.5,
+        "references": "L7830",
+        "is_semi_empirical": 1,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 107,
+      "symbol": "Bh",
+      "atomic_weight": 274.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": 7.7,
+      "ionization_metadata": {
+        "ionization_energy": 7.7,
+        "uncertainty": 0.5,
+        "references": "L13544",
+        "is_semi_empirical": 1,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 108,
+      "symbol": "Hs",
+      "atomic_weight": 269.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": 7.6,
+      "ionization_metadata": {
+        "ionization_energy": 7.6,
+        "uncertainty": 0.5,
+        "references": "L13544",
+        "is_semi_empirical": 1,
+        "is_theoretical": 0
+      }
+    },
+    {
+      "atomic_number": 109,
+      "symbol": "Mt",
+      "atomic_weight": 276.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": null,
+      "ionization_metadata": null
+    },
+    {
+      "atomic_number": 110,
+      "symbol": "Ds",
+      "atomic_weight": 281.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": null,
+      "ionization_metadata": null
+    },
+    {
+      "atomic_number": 111,
+      "symbol": "Rg",
+      "atomic_weight": 281.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": null,
+      "ionization_metadata": null
+    },
+    {
+      "atomic_number": 112,
+      "symbol": "Cn",
+      "atomic_weight": 285.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": null,
+      "ionization_metadata": null
+    },
+    {
+      "atomic_number": 113,
+      "symbol": "Nh",
+      "atomic_weight": 286.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": null,
+      "ionization_metadata": null
+    },
+    {
+      "atomic_number": 114,
+      "symbol": "Fl",
+      "atomic_weight": 289.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": null,
+      "ionization_metadata": null
+    },
+    {
+      "atomic_number": 115,
+      "symbol": "Mc",
+      "atomic_weight": 288.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": null,
+      "ionization_metadata": null
+    },
+    {
+      "atomic_number": 116,
+      "symbol": "Lv",
+      "atomic_weight": 293.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": null,
+      "ionization_metadata": null
+    },
+    {
+      "atomic_number": 117,
+      "symbol": "Ts",
+      "atomic_weight": 294.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": null,
+      "first_ionization_energy": null,
+      "ionization_metadata": null
+    },
+    {
+      "atomic_number": 118,
+      "symbol": "Og",
+      "atomic_weight": 294.0,
+      "en_pauling": null,
+      "covalent_radius_cordero": null,
+      "electron_affinity": 0.055999999999999994,
+      "first_ionization_energy": null,
+      "ionization_metadata": null
+    }
+  ],
+  "missing_rule": "JSON null retained. Model encoding uses a separate missing mask; no chemical measurement is fabricated.",
+  "scope": "Elemental reference descriptors, not precursor decomposition, ionic radius, oxidation state, support binding or SAC experimental data."
+}
