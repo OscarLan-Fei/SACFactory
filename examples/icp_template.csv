@@ -1,0 +1,3 @@
+sample_id,element,w_wt_percent,unit,flag,method_id,source,precursor_mM,precursor_compound,precursor_type,precursor_oxidation_state,precursor_coordination,precursor_spin,precursor_source,precursor_state_source
+MY_SAMPLE_001,Fe,,wt%,MISSING,MY_ICP_AES_V1,,0.05,,,,,,,
+MY_SAMPLE_001,Co,,wt%,MISSING,MY_ICP_AES_V1,,0.05,,,,,,,
