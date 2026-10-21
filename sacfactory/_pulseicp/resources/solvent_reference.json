@@ -1,0 +1,10 @@
+{
+  "solvent": "DMF",
+  "cas": "68-12-2",
+  "density_g_mL": 0.944,
+  "density_status": "LITERATURE_VALUE_FROM_PRODUCT_LISTING",
+  "source_url": "https://www.sigmaaldrich.com/US/en/product/sial/227056",
+  "checked_date": "2026-10-14",
+  "temperature_C": null,
+  "note": "The product listing gives 0.944 g/mL (lit.) without an explicit temperature. Editable estimate for pure-solvent volume, not measured final PAN/salt solution volume."
+}

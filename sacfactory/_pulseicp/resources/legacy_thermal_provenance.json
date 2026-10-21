@@ -1,0 +1,13 @@
+{
+  "status": "SIMULATED_UNFITTED_LEGACY_PRIOR",
+  "source_model": "temperature-dependent-plateau-loss-v2",
+  "new_model": "independently implemented equivalent retention/carrier equations",
+  "rows_verified": 2400,
+  "maximum_retention_difference_percent_points": 2.842170943040401e-14,
+  "source_files": {
+    "all50_metal_retention.pdf": "9da7daed8b9f73ce328124d90c8cdcac3505559e207074c4a42eb0d80d6af57f",
+    "pulse_losses.pdf": "852986e212b5fb2e8bb3acc10f98a3fc172320f24c1cc8f25aa4249c25192204",
+    "metal_loss_curves_all50.csv": "943461a4e05d70e404bfd0e6be6c7fceb4049b66963258d1e844a3aa14a67188"
+  },
+  "note": "This records continuity of assumptions, not experimental validation. The legacy fifty-metal references contain no independent sublimation temperatures; gas-atom formation energies are explicit proxies."
+}
