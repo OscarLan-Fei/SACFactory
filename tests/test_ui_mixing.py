@@ -20,7 +20,7 @@ class MixingUITests(unittest.TestCase):
             self.assertIn('Mixing thermodynamics', [w.label for w in self.app.tabs])
             widget = self.app.multiselect(key=f'mixing_elements_{origin}')
             self.assertEqual(len(widget.options), 118)
-            self.assertIsNotNone(self.app.button(key=f'mixing_elements_{origin}_periodic_open'))
+            self.assertIsNotNone(self.app.button(key=f'mixing_elements_{origin}_3_Fe'))
             widget.set_value(['Fe', 'Co', 'Og']).run()
             self.assertEqual(len(self.app.exception), 0)
             self.assertTrue(any(w.label == 'Download mixing descriptor recipes CSV' for w in self.app.get('download_button')))
