@@ -16,6 +16,25 @@ RECIPE={'origin':'REAL','elements':['Fe'],'concentrations_mM':{'Fe':50.},
 
 
 class PretrainedTests(unittest.TestCase):
+    def test_complete_predictions_with_windows_reference_line_endings(self):
+        from sacfactory.mixing import mixing_table as recipe_table
+        from sacfactory._pulseicp.thermodynamics import mixing_table as loading_table
+        original = Path.read_bytes
+        def windows_bytes(path):
+            raw = original(path)
+            return raw.replace(b'\r\n', b'\n').replace(b'\n', b'\r\n') if path.suffix == '.tsv' else raw
+        recipe_table.cache_clear()
+        loading_table.cache_clear()
+        try:
+            with patch.object(Path, 'read_bytes', windows_bytes):
+                for name in available():
+                    result = load(name, 'cpu').predict([RECIPE])[0]
+                    self.assertGreater(result['predicted_total_wt_percent'], 0)
+                    self.assertTrue(0 <= result['p_xrd_pass'] <= 1)
+        finally:
+            recipe_table.cache_clear()
+            loading_table.cache_clear()
+
     def test_bundles_predict_without_observations_and_ignore_changed_results(self):
         self.assertEqual(set(available()),{'SAC-Gen-Diffusion','SAC-Gen-GB'})
         for name in available():
