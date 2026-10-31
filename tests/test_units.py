@@ -1,4 +1,3 @@
-from sacfactory.bootstrap import load_demo_seed
 """Mass-percent recording, legacy conversion and migration regression tests."""
 import copy
 import io
@@ -138,6 +137,7 @@ class MassPercentTests(unittest.TestCase):
 
     def test_seed_is_canonical_and_keeps_expected_physical_scale(self):
         root = Path(__file__).resolve().parents[1]
+        from sacfactory.bootstrap import load_demo_seed
         seed = load_demo_seed(root)
         self.assertEqual(len(seed["samples"]), 1476)
         self.assertTrue(all(a["unit"] == "wt%" for s in seed["samples"] for a in s["icp"]))

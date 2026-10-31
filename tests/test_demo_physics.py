@@ -1,4 +1,3 @@
-from sacfactory.bootstrap import load_demo_seed
 """Empirical anchors, mass conservation, saturation and campaign ordering."""
 import json
 from pathlib import Path
@@ -41,6 +40,7 @@ class DemoPhysicsTests(unittest.TestCase):
         self.assertLess(light['true_w_wt_percent'],2.4)
 
     def test_new_seed_follows_single_element_first_and_every_mass_ledger(self):
+        from sacfactory.bootstrap import load_demo_seed
         content=load_demo_seed(Path(__file__).resolve().parents[1])
         rows=content['samples']; self.assertEqual(len(rows),1476)
         self.assertGreater(content['unique_recipes'],1000)

@@ -1,4 +1,3 @@
-from sacfactory.bootstrap import load_demo_seed
 """Physical demo consistency, reported endpoints and protected forecast inputs."""
 import copy
 import json
@@ -19,6 +18,7 @@ from sacfactory.domain import screen,recipe_key
 class DemoObservationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        from sacfactory.bootstrap import load_demo_seed
         cls.content=load_demo_seed(ROOT)
         cls.rows=cls.content['samples']
 

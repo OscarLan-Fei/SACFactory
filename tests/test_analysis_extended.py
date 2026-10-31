@@ -1,4 +1,3 @@
-from sacfactory.bootstrap import load_demo_seed
 """Scientific safeguards for synthesis dashboard and forward evaluation."""
 import copy
 import json
@@ -18,7 +17,7 @@ from test_science import sample, method
 class ExtendedAnalysisTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.demo = load_demo_seed(Path(__file__).resolve().parents[1])['samples']
+        cls.demo = json.loads((Path(__file__).resolve().parents[1] / 'examples/demo_seed.json').read_text())['samples']
 
     def forecast(self):
         s = sample()

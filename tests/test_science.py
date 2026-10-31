@@ -1,4 +1,3 @@
-from sacfactory.bootstrap import load_demo_seed
 import copy
 import json
 import tempfile
@@ -128,7 +127,7 @@ class WorkflowTests(unittest.TestCase):
             seed(real, root)
             self.assertEqual(real.all("sample"), [])
             self.assertEqual(real.all("method"), [])
-        demo = load_demo_seed(root)
+        demo = json.loads((root / "examples/demo_seed.json").read_text(encoding="utf-8"))
         counts = summary(demo["samples"], {m["method_id"]: m for m in demo["methods"]})["counts"]
         self.assertEqual(counts, demo['status_counts'])
         self.assertEqual(sum(counts.values()), 1476)
