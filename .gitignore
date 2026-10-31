@@ -30,3 +30,5 @@ examples/demo_seed.json
 *.pickle
 *.safetensors
 *.npz
+
+!pretrained/*.weights.npz

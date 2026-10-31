@@ -2,6 +2,11 @@
 
 **A local experiment workbench for single-atom catalyst synthesis.**
 
+SACFactory includes trained **SAC-Gen-Diffusion** and **SAC-Gen-GB** inference
+models. After installation, open **Real experiments → Discovery lab → Predict**
+to forecast a recipe without historical records, an API key or retraining.
+See the [model card](pretrained/MODEL_CARD.md) and [Discovery lab guide](DISCOVERY_LAB.md).
+
 SACFactory connects recipe recording, chemical descriptors, model evaluation and
 next-batch planning. Its SAC-Gen workflow predicts continuous ICP metal content
 and the probability of an XRD PASS judgment. Researchers review proposals,
@@ -56,7 +61,8 @@ scientific-prior control. The variants share a physical loading framework and a
 trained structural-assessment probability head. Source-only refinement and
 recipe-grouped masks support explicit evaluation of model and information choices.
 See [SAC-Gen design](SAC_GEN_DESIGN.md) for architecture, input contracts,
-training, validation and the implementation map. Private weights are not bundled.
+training, validation and the implementation map. The included trained parameters
+are described in the [pretrained model card](pretrained/MODEL_CARD.md).
 
 ## What each workspace does
 
@@ -66,12 +72,22 @@ training, validation and the implementation map. Private weights are not bundled
 | **Samples & data** | Enter, import, edit and delete recipes; manage pending experiments and return results | Sample records and saved forecasts |
 | **Materials & consumables** | Maintain precursor identities, chemical states and preparation materials | Editable material declarations and reference metadata |
 | **Next batch** | Search allowed conditions with the available planner or a trained SAC-Gen checkpoint | Reviewed proposals that can be added to pending |
+| **Discovery lab** | Direct pretrained prediction, evidence retrieval, candidate models, inverse search and frozen experimental feedback | Forecasts, reviewed proposals and an auditable discovery ledger |
 | **Data analysis** | Explore outcomes, assess descriptors, validate predictions and compare models | Plots, paired predictions, metrics and exports |
 | **Language model** | Configure an optional compatible API and explicit data sharing | Research conversation connected to selected records |
 | **About** | Read the workbench overview and method context | Project orientation |
 
 The [User guide](USER_GUIDE.md) explains all nine analysis tabs, the score plots,
 element selection and the complete record-to-prediction workflow.
+
+The [Discovery lab guide](DISCOVERY_LAB.md) covers its nine connected tabs,
+unit conventions, protected validation, feedback storage and candidate models.
+SAC-Gen-Set is an experimental permutation-invariant model. Candidate training
+does not replace the primary Next batch checkpoint automatically.
+Its [Characterization workflow](CHARACTERIZATION.md) accepts SEM, XRD and STEM
+exports, extracts reviewable candidate features and returns reviewed assessments
+to the experiment loop. Dedicated learned recognition models require additional
+domain-specific validation.
 
 ## A first session
 
@@ -106,9 +122,11 @@ randomly on page refresh. It demonstrates the software and is not experimental
 evidence or an independent model benchmark.
 
 REAL starts in a separate empty local database. This repository excludes the
-author's experimental records, raw assays, credentials and private trained
-checkpoints. SAC-Gen algorithms are included; train a local deployment checkpoint
-using the appropriate data space before using that checkpoint for planning.
+author's experimental records, raw assays, credentials and original private
+training checkpoints. The **inference-only pretrained release** includes learned
+parameters and aggregate normalizers, with experimental rows and training traces
+removed. It works in Discovery lab immediately. Local Next batch deployments and
+new candidates can still be trained using the appropriate data space.
 Runtime databases and checkpoints are excluded by `.gitignore`.
 
 GitHub hosts the source. Local deployment starts a service on your computer;
@@ -120,5 +138,7 @@ publishing the repository does not itself create a hosted application.
 - [User guide and module reference](USER_GUIDE.md)
 - [Model, physical priors and evaluation methods](METHODS.md)
 - [SAC-Gen architecture and information controls](SAC_GEN_DESIGN.md)
+- [Discovery lab guide](DISCOVERY_LAB.md)
+- [Pretrained model card](pretrained/MODEL_CARD.md)
 - [Predictive and acquisition benchmarks](BENCHMARKS.md)
 - [Source acknowledgments](CREDITS.md)

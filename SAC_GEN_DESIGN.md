@@ -88,9 +88,12 @@ Deployment training creates a checkpoint for future proposals; it does not creat
 new test evidence. Saved model identity includes the training and configuration
 information needed to detect stale inputs. REAL and DEMO remain isolated.
 
-The repository contains algorithms and synthetic demonstration data. Private
-experimental records, validation exports and trained checkpoints are excluded.
-Train the relevant models locally before using their deployment checkpoints.
+The repository contains algorithms, synthetic demonstrations and an
+[inference-only pretrained release](pretrained/MODEL_CARD.md). Original private
+checkpoints, experimental records and validation exports are excluded. The public
+release contains only the parameters needed for forward prediction, with no
+sample records, identifiers, split membership or training logs. Use it directly
+under Discovery lab, or train separate local deployment candidates.
 
 ## Implementation map
 

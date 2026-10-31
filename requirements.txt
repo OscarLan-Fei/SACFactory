@@ -9,3 +9,5 @@ altair>=6,<7
 matplotlib>=3.10,<4
 
 torch>=2.6,<3
+PyMuPDF>=1.26,<2
+Pillow>=12,<13

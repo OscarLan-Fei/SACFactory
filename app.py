@@ -85,7 +85,7 @@ with st.sidebar:
     st.caption("INTELLIGENT SYNTHESIS WORKBENCH")
     origin_label = st.radio("Data space", ["Real experiments · REAL", "Simulated demo · DEMO"], key="mode")
     origin = "REAL" if "REAL" in origin_label else "DEMO"
-    page = st.radio("Workspace", ["Experiment chat", "Samples & data", "Materials & consumables", "Next batch", "Data analysis", "Language model", "About"], key="page")
+    page = st.radio("Workspace", ["Experiment chat", "Samples & data", "Materials & consumables", "Next batch", "Discovery lab", "Data analysis", "Language model", "About"], key="page")
     st.divider()
     api_active = bool(st.session_state.get("api_config") and st.session_state.get(f"api_permission_{origin}", False))
     research_mode = st.session_state.get('assistant_mode_setting', 'Task interpretation') == 'Research conversation'
@@ -810,6 +810,10 @@ elif page == "Next batch":
                     st.rerun()
             else:
                 st.caption("No experiments are currently reserved.")
+
+elif page == "Discovery lab":
+    from sacfactory.ui_discovery import render_discovery
+    render_discovery(store,samples,methods,context)
 
 elif page == "Data analysis":
     render_analysis(samples, methods, origin, reservations, context, space, state.info, store)

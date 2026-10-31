@@ -10,7 +10,9 @@ evaluation, deployment training and new experiments. See
 **Real experiments · REAL** holds your local experimental records.
 **Simulated demo · DEMO** holds the synthetic campaign. Records and models remain
 separate. A DEMO model is a demonstration model, not a model validated on your
-experiments. Algorithms are included; private trained checkpoints are not.
+experiments. Original private training checkpoints are not included. The public
+inference-only SAC-Gen release is available under **Discovery lab → Predict**
+in REAL without importing any experimental records or training a new model.
 
 ## Workspace reference
 
@@ -134,6 +136,10 @@ Read the workbench overview and method context here. Detailed equations and
 benchmark definitions are in [Methods](METHODS.md) and [Benchmarks](BENCHMARKS.md).
 
 ## Validate first, then train for use
+
+For immediate pretrained forecasts and the new discovery workflows, see
+[Discovery lab](DISCOVERY_LAB.md). Training is optional for using that release;
+the steps below concern new local fits and their validation.
 
 In **Data analysis → Weighted validation**:
 

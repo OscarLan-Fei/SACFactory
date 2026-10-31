@@ -102,7 +102,7 @@ this prompt does not bypass the approval rules of your installation.
 | Service | `/_stcore/health` responds successfully on the chosen loopback port |
 | Browser | SACFactory opens with REAL and DEMO data spaces |
 | Initial data | DEMO loads; REAL contains no bundled private experiments |
-| Model | Algorithms are present; a deployment checkpoint needs local training |
+| Model | Bundled pretrained models work in **Discovery lab → Predict** without training; new local deployments are optional |
 
 Use **Python 3.12**. Internet access is needed to download source and dependencies.
 First installation can take longer than later starts. CPU execution is supported.
@@ -175,7 +175,8 @@ unless an actual problem requires it.
 | Dependency resolution error | Keep the full error; check Python version and package builds before changing constraints |
 | Port occupied | Use another free port, such as 8532, and open that URL |
 | CUDA unavailable | Use CPU; inspect `torch.cuda.is_available()` and driver/build compatibility separately |
-| No model for planning | Validate data, then click **Train deployment model**; private weights are not bundled |
+| Immediate prediction | Use **Discovery lab → Predict** with a bundled pretrained model |
+| No local Next batch model | Validate data, then click **Train deployment model**; the local deployment is separate from the public inference release |
 | Fit uses fewer rows | Inspect calculation scope and eligibility; missing measurements are not zero |
 | Research conversation fails | Check **Language model**; numerical modeling does not require that API |
 
