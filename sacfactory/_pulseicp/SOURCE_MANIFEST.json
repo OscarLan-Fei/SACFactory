@@ -165,8 +165,10 @@
       "upstream": "pulseicp/thermodynamics.py",
       "upstream_sha256": "20bf1d0268d921afc5380e5e52b97448bdb1e4e121e46b8d4e9f3ee10b79381b",
       "local": "thermodynamics.py",
-      "local_sha256": "20bf1d0268d921afc5380e5e52b97448bdb1e4e121e46b8d4e9f3ee10b79381b",
-      "adaptations": []
+      "local_sha256": "4b587a2a77605a6390ac5d0da1ea29556c5ac2fe2beecf41683eafacb0b9ebd2",
+      "adaptations": [
+        "Canonical LF hashing tolerates Windows Git CRLF conversion while rejecting changed reference values."
+      ]
     },
     {
       "upstream": "pulseicp/transfer.py",

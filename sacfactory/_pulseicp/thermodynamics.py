@@ -19,7 +19,8 @@ FEATURE_NAMES = ['mix_h_known_scaled', 'mix_entropy_over_R', 'mix_g_complete_sca
 def mixing_table():
     data = snapshot('binary_mixing_enthalpies.json')
     table = {}
-    raw = (ROOT/'resources/MiedemaLiquidDeltaHf.tsv').read_bytes()
+    # Preserve the pinned content check across Git's Windows newline conversion.
+    raw = (ROOT/'resources/MiedemaLiquidDeltaHf.tsv').read_bytes().replace(b'\r\n', b'\n')
     if hashlib.sha256(raw).hexdigest() != data['upstream_sha256']:
         raise ValueError('Extended mixing table failed the SHA256 bound by the reference snapshot.')
     for line in raw.decode('utf-8').splitlines()[1:]:
