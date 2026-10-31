@@ -139,7 +139,10 @@ def load(name='SAC-Gen-GB', device='auto'):
     obj.head = meta['head']
     obj.training_ids = []
     obj.training_samples = []
-    obj.xrd_info = {'probability_status': 'PRETRAINED_FORECAST; reliability on a new campaign requires evaluation'}
+    obj.xrd_info = {
+        'probability_status': 'PRETRAINED_FORECAST; reliability on a new campaign requires evaluation',
+        'reason': 'Structural features are unavailable for this recipe; inspect inputs and reference resources.',
+    }
     if meta['family'] == 'Gradient boosting residual':
         loading = _ReleasedGB(meta['family'], settings, meta['physics'])
         loading.regressor = _Trees(meta['trees'])

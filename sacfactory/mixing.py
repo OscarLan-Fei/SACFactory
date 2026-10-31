@@ -40,7 +40,8 @@ def reference():
 def mixing_table():
     """Validate the pinned full table and agreement with every reviewed scope row."""
     metadata = reference()
-    raw = (RESOURCE_ROOT / 'MiedemaLiquidDeltaHf.tsv').read_bytes()
+    # Git can convert text files to CRLF on Windows; verify canonical LF bytes.
+    raw = (RESOURCE_ROOT / 'MiedemaLiquidDeltaHf.tsv').read_bytes().replace(b'\r\n', b'\n')
     if hashlib.sha256(raw).hexdigest() != metadata['upstream_sha256']:
         raise ValueError('The pinned binary-mixing TSV failed its reference SHA-256 check.')
     table = {}
