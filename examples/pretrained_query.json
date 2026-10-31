@@ -1,0 +1,10 @@
+{
+  "sample_id": "PROPOSED_FE",
+  "elements": ["Fe"],
+  "concentrations_mM": {"Fe": 50.0},
+  "pulse_limit_C": 1000,
+  "pulse_count": 1,
+  "pan_mass_g": 2.0,
+  "solvent_volume_mL": 20.0,
+  "origin": "REAL"
+}
