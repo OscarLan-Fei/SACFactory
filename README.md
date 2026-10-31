@@ -48,6 +48,16 @@ evidence; a separate deployment fit produces the local checkpoint used for
 future recipes. REAL and synthetic DEMO remain separate throughout.
 [PNG](SACFactory-overview.png) · [Editable workflow source](SACFactory-overview.mmd).
 
+## SAC-Gen model design
+
+The public interface provides **SAC-Gen-Diffusion** and **SAC-Gen-GB**, together
+with data-only baselines, a supervised chemical-descriptor control and a fixed
+scientific-prior control. The variants share a physical loading framework and a
+trained structural-assessment probability head. Source-only refinement and
+recipe-grouped masks support explicit evaluation of model and information choices.
+See [SAC-Gen design](SAC_GEN_DESIGN.md) for architecture, input contracts,
+training, validation and the implementation map. Private weights are not bundled.
+
 ## What each workspace does
 
 | Workspace | Purpose | Typical output |
@@ -109,5 +119,6 @@ publishing the repository does not itself create a hosted application.
 - [Local deployment with Codex](INSTALL_WITH_CODEX.md)
 - [User guide and module reference](USER_GUIDE.md)
 - [Model, physical priors and evaluation methods](METHODS.md)
+- [SAC-Gen architecture and information controls](SAC_GEN_DESIGN.md)
 - [Predictive and acquisition benchmarks](BENCHMARKS.md)
 - [Source acknowledgments](CREDITS.md)

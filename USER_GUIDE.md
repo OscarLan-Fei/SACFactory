@@ -137,16 +137,18 @@ benchmark definitions are in [Methods](METHODS.md) and [Benchmarks](BENCHMARKS.m
 
 In **Data analysis → Weighted validation**:
 
-1. Select elements and one or more **Validation models**. Conventional options
-   are mean/prevalence, Ridge/logistic, random forest, gradient boosting and
-   Gaussian process.
-2. For SAC-Gen, choose **Gaussian residual**, **Conditional diffusion**,
-   **Transformer residual** or **Diffusion Transformer**. Selection alone does
-   not train a model.
+1. Select elements and one or more **Validation models**. Public options include
+   SAC-Gen-Diffusion, SAC-Gen-GB, data-only Gaussian process/random forest/gradient
+   boosting, a supervised descriptor control and a fixed science-prior control.
+2. Select the **Deployment variant** when training for use: SAC-Gen-Diffusion or
+   SAC-Gen-GB. The variants share the physical framework and structural-assessment
+   head, with different ICP learners. Selection alone does not train a model.
 3. Choose **Validation protocol** and **Test batches per fold**. Rotating batches
    can evaluate every eligible sample while keeping each outer test batch out
    of its fold's training. Unseen-element, new-recipe, chronological and
    single-to-mixture protocols address different questions.
+   Random recipe-grouped validation keeps identical complete recipes together;
+   it can leave batch identifiers in both source and held-out pools.
 4. Open **Training and scoring settings** if needed. Start with a modest budget.
    Auto uses the available execution device; conventional models use CPU.
 5. Click **Run masked validation**. Inspect coverage and unavailable-fold reasons

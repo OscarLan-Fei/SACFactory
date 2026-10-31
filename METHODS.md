@@ -8,10 +8,12 @@ and declared precursor descriptors supplement these controls. Measured results
 are excluded from future-recipe features. Concentrations are stored in mM and
 ICP W in wt%. At 20 mL, 1 mmol corresponds to 50 mM.
 
-XRD PASS/FAIL is the recorded experimental judgment. It is not inferred by
-automatically reading an XRD pattern. ICP is a continuous loading target, not a
-pass-probability task. STEM confirmation is optional and recorded separately.
-ICP plus XRD screening does not alone establish atomic dispersion.
+The structural target is the recorded XRD/STEM assessment, resolved from the
+primary judgment first and an explicit legacy STEM conclusion when the primary
+field is pending. It is not inferred by automatically reading a pattern or image.
+ICP is a continuous loading target, not a pass-probability task. Assay provenance
+and optional STEM evidence remain recorded. ICP plus XRD screening does not alone
+establish atomic dispersion.
 
 Chemical references retain source information and missing-value masks.
 Precursor formal charge does not establish the final supported-metal oxidation
@@ -27,7 +29,10 @@ and diffusion-transformer architectures are available. The inherited joint
 mass decoder shares one recovered-matrix denominator across mixture members
 and bounds metal retention by feed mass.
 
-The XRD head is L2 logistic regression with C=0.1. Its inputs are recipe and
+The structural head is L2 logistic regression (C=0.1 in the unrefined path).
+Optional source-only refinement selects regularization, calibration and a
+decision threshold as described in [SAC-Gen design](SAC_GEN_DESIGN.md).
+Its inputs are recipe and
 chemical descriptors, the logit of a mechanistic XRD prior with a missing mask,
 and generated ICP total-mean, marginal-spread and molar-summary features.
 The sum of marginal standard deviations is a feature, not a joint confidence
@@ -41,7 +46,9 @@ both outcome classes; unavailable fits remain missing.
 
 ## Evaluation
 
-Rotating batch validation holds out disjoint batch groups until each eligible
+Random recipe-grouped validation holds repeated complete recipes together, using
+the declared seed. Batch identities can overlap under that protocol. Rotating
+batch validation holds out disjoint batch groups until each eligible
 sample has been evaluated. Unseen-element, new-recipe, chronological and
 single-to-mixture protocols address different generalization questions.
 Repeated recipes across batches are allowed in batch validation.

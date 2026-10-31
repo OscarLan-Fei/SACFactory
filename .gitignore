@@ -25,3 +25,8 @@ Thumbs.db
 
 # Regenerated uncompressed demo fixture
 examples/demo_seed.json
+*.joblib
+*.pkl
+*.pickle
+*.safetensors
+*.npz

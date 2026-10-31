@@ -156,9 +156,14 @@ if active_sac_path.exists():
     try:active_sac_pointer=json.loads(active_sac_path.read_text())
     except (ValueError,OSError):pass
 if page=='Next batch' and active_sac_pointer and st.session_state.get(f'next_sac_gen_{origin}',True):
+    active_key=f'planning_sac_gen_model_{origin}'
+    if st.session_state.get(active_key)!=active_sac_pointer['model_id']:
+        st.session_state.pop(f'preview_{origin}',None)
+        st.session_state.pop(f'plan_note_{origin}',None)
+        st.session_state[active_key]=active_sac_pointer['model_id']
     state=ModelState(None,{'engine':'sac_gen','mode':'SAC_GEN_DEPLOYMENT','model_id':active_sac_pointer['model_id'],
         'n_labeled':active_sac_pointer.get('training_samples',0),'n_batches':len({s.get('batch_id') for s in samples}),
-        'reason':'Trained SAC-Gen checkpoint available. XRD probability and continuous ICP forecasts are evaluated when generating a batch. Training-record changes require retraining.'},[])
+        'reason':'Trained SAC-Gen checkpoint available. XRD/STEM probability and continuous ICP forecasts are evaluated when generating a batch. Training-record changes require retraining.'},[])
     st.session_state[f'planning_state_{origin}']=(planning_signature,state)
 elif page=='Next batch':
     state = train_cached(json.dumps(payload, ensure_ascii=False, sort_keys=True))
@@ -192,7 +197,7 @@ with summary_container:
     c1, c2, c3, c4 = st.columns(4)
     for c, label, value in ((c1, "Samples", stats["total"]), (c2, "Screen pass", stats["counts"].get("PASS", 0)), (c3, "Screen fail", failed), (c4, "Evidence pending", pending)):
         c.metric(label, value)
-    st.markdown('<div class="note">Candidate screening uses ICP PASS + XRD PASS. Record complete burnout separately as a synthesis failure; handling/device exceptions require retesting. Unperformed tests remain pending. STEM is separate. Screening does not independently establish atomic dispersion.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="note">Candidate screening uses ICP PASS + XRD/STEM PASS. Record complete burnout separately as a synthesis failure; handling/device exceptions require retesting. Unperformed tests remain pending. Structural judgments may use XRD or STEM. Screening does not independently establish atomic dispersion.</div>', unsafe_allow_html=True)
 if origin == "DEMO":
     st.warning("DEMO contains explicitly simulated synthesis outcomes, optional content readings and saved forward predictions. Assumed response functions illustrate the workflow, not experimental performance. DEMO data and training are isolated from REAL.")
 
@@ -203,10 +208,12 @@ def render_recommendations(rows, key):
     table = recommendation_table(rows)
     sac_gen_rows=any(r.get('sac_gen_prediction') for r in rows)
     if sac_gen_rows:
-        st.write('**SAC-Gen: trained loading and XRD forecasts**')
-        st.dataframe(pd.DataFrame(table)[['target_elements','p_xrd_pass','p_xrd_fail','predicted_total_wt_percent',
-            'concentration_mM','pulse_count','pulse_limit_C','extrapolation']],hide_index=True,width='stretch')
-        st.caption('XRD probabilities are trained forecasts, not measured atomic dispersion. ICP is predicted as W / wt%, without a pass classifier. Correctly predicted XRD FAIL experiments count as accurate model predictions.')
+        st.write('**SAC-Gen: trained loading and XRD/STEM forecasts**')
+        st.dataframe(pd.DataFrame(table)[['target_elements','p_xrd_pass','p_xrd_fail','predicted_xrd_state','xrd_pass_threshold','predicted_total_wt_percent',
+            'concentration_mM','pulse_count','pulse_limit_C','extrapolation']],hide_index=True,width='stretch',
+            column_config={'predicted_xrd_state':st.column_config.TextColumn('XRD/STEM decision'),
+                'xrd_pass_threshold':st.column_config.NumberColumn('PASS threshold',format='%.2f')})
+        st.caption('XRD/STEM decisions use the displayed probability threshold. Probabilities and decisions are forecasts, not confirmation of atomic dispersion. ICP is predicted as W / wt%. Correct FAIL forecasts count as accurate predictions.')
     if not sac_gen_rows:st.dataframe(pd.DataFrame(table)[["target_elements", "p_screen_pass", "concentration_mM", "precursor_compounds", "pulse_count", "pulse_limit_C", "total_concentration_mM", "purpose", "extrapolation"]], hide_index=True, width="stretch",
         column_config={"target_elements": st.column_config.TextColumn("Composition", width="small"),
                        "p_screen_pass": st.column_config.NumberColumn("Predicted p", format="%.3f", width="small", help="Uncalibrated candidate screening estimate, not a measurement."),
@@ -260,11 +267,11 @@ def render_recommendations(rows, key):
             st.error(str(exc))
     if linked:
         st.success("Pending samples: " + ", ".join(r["pending_sample_id"] for r in linked) + ". Edit plans under Pending experiments; return measurements under Result feedback.")
-    st.caption("One click saves the full preview with automatic SAC IDs, pending ICP/XRD and separate prediction metadata. Measured peak, voltage/current and actual synthesis batch remain unrecorded.")
+    st.caption("One click saves the full preview with automatic SAC IDs, pending ICP/XRD/STEM and separate prediction metadata. Measured peak, voltage/current and actual synthesis batch remain unrecorded.")
     a, b, c = st.columns([1, 1, 2])
     a.download_button("Export batch CSV", csv_bytes(table), file_name=f"{origin.lower()}_next_batch.csv", mime="text/csv", key=f"download_{key}")
-    a.download_button("Results workbook", recommendation_workbook(rows), file_name=f"{origin.lower()}_batch_results.xlsx", key=f"workbook_{key}")
-    a.download_button("Compact reporting tables", compact_reporting_zip(rows), file_name=f"{origin.lower()}_compact_batch.zip", mime="application/zip", key=f"compact_{key}", help="Unzip, fill batch/ICP/settings CSVs in Excel, then upload all three together. Actual peak temperatures and assay results are blank.")
+    a.download_button("Results workbook", lambda: recommendation_workbook(rows), file_name=f"{origin.lower()}_batch_results.xlsx", key=f"workbook_{key}", on_click='ignore')
+    a.download_button("Compact reporting tables", lambda: compact_reporting_zip(rows), file_name=f"{origin.lower()}_compact_batch.zip", mime="application/zip", key=f"compact_{key}", on_click='ignore', help="Unzip, fill batch/ICP/settings CSVs in Excel, then upload all three together. Actual peak temperatures and assay results are blank.")
     existing_ids = {r["recommendation_id"] for r in reservations}
     new = [r for r in rows if r["recommendation_id"] not in existing_ids]
     if b.button("Reserve batch", disabled=not new, key=f"reserve_{key}"):
@@ -312,7 +319,7 @@ if page == "Experiment chat":
         if not state.info.get('deferred'):
             st.caption(f"Training pool: {state.info['n_labeled']} valid records / {state.info['n_batches']} batches")
         if state.model is None:
-            st.caption("Enter ICP/XRD judgments directly or supplement numeric evidence. Collect independent recipes with complete synthesis conditions for model training." if origin == "REAL" and len(samples) == 1 else state.info["reason"])
+            st.caption("Enter ICP/XRD/STEM judgments directly or supplement numeric evidence. Collect independent recipes with complete synthesis conditions for model training." if origin == "REAL" and len(samples) == 1 else state.info["reason"])
         if st.button("Configure composition and range", width="stretch"):
             st.session_state["page_jump"] = "Next batch"
             st.rerun()
@@ -447,92 +454,98 @@ if page == "Experiment chat":
             render_recommendations(rows, "chat")
 
 elif page == "Samples & data":
-    tab4, tab1, tab_pending, tab_feedback, tab2, tab3 = st.tabs(["Fill batch table", "Experiment records", "Pending experiments", "Result feedback", "Bulk import / report", "Register sample"])
-    with tab4:
-        render_batch_panel(store, context, methods, ROOT)
-    with tab1:
-        render_records(store, samples, methods, concentration_text)
-    with tab_pending:
-        render_pending(store, samples, methods)
-    with tab_feedback:
-        render_feedback(store, samples, methods)
-    with tab2:
-        st.write("Upload a compact **batch / icp / settings** workbook or its three CSV tables. The advanced **samples / icp / methods** format remains supported for legacy imports. Optional ICP values are recorded in W / wt%.")
-        compact = ROOT / "examples/compact_batch_template.xlsx"
-        if compact.exists(): st.download_button("Download compact batch template", compact.read_bytes(), "SACFactory_batch_template.xlsx")
-        st.download_button("Download bulk Excel template", (ROOT / "examples/bulk_import_template.xlsx").read_bytes(), "SACFactory_bulk_template.xlsx")
-        upload_nonce = st.session_state.get(f"upload_nonce_{origin}", 0)
-        uploads = st.file_uploader("Standard Excel, or sample and ICP CSV files", type=["xlsx", "csv"], accept_multiple_files=True, key=f"bulk_files_{origin}_{upload_nonce}")
-        overwrite = st.checkbox("Revise existing sample or method IDs (preserve history)", value=False, key=f"import_revision_{origin}")
-        if uploads:
-            try:
-                preview = preview_import([(file.name, file.getvalue()) for file in uploads], store, overwrite)
-                if preview.rows:
-                    st.dataframe(pd.DataFrame(preview.rows), hide_index=True, width="stretch")
-                if preview.method_changes:
-                    st.write("**Analytical method changes**")
-                    st.dataframe(pd.DataFrame(preview.method_changes), hide_index=True, width="stretch")
-                if preview.queue_updates:
-                    st.caption(f"{len(preview.queue_updates)} matching reservations will be marked completed and linked to reported samples.")
-                st.caption("Revision replaces each complete sample. Start from an export and retain all ICP rows. Source files are archived.")
-                if st.button("Commit import to local database", type="primary"):
-                    result = commit_import(preview, store)
-                    st.session_state[f"last_import_{origin}"] = result
-                    st.session_state[f"upload_nonce_{origin}"] = upload_nonce + 1
-                    st.rerun()
-            except (ValueError, UnicodeError, KeyError) as exc:
-                st.error(str(exc))
-        if st.session_state.get(f"last_import_{origin}"):
-            result = st.session_state[f"last_import_{origin}"]
-            st.success(f"Last import: {result['samples']} samples, {result['methods']} method updates, {result['completed_tasks']} completed reservations.")
-    with tab3:
-        st.caption("Register recipes here; no measured values are generated. Report results using the standard template.")
-        id_mode = st.radio("Sample ID numbering", ["Automatic", "Manual"], key=f"register_id_mode_{origin}", horizontal=True)
-        elements_text = element_text_area("Target elements, separated by semicolons",
-            value=";".join(context["elements"]), key=f'register_elements_{origin}')
-        try:
-            register_elements = parse_elements(elements_text)
-        except ValueError as exc:
-            register_elements = []
-            st.error(str(exc))
-        from sacfactory.ui_preparation import preparation_inputs
-        from sacfactory.preparation import from_mM, to_mM
-        register_unit, register_materials = preparation_inputs(f'register_preparation_{origin}')
-        from sacfactory.experiment_defaults import shared_process_values
-        registration_process = shared_process_values(context)
-        with st.form("register_sample"):
-            cols = st.columns(2)
-            sample_id = cols[0].text_input("New sample ID", value=store.next_sample_ids()[0] if id_mode == "Automatic" else "", disabled=id_mode == "Automatic",
-                key=f"new_sample_id_{origin}_{id_mode}_{store.next_sample_ids()[0] if id_mode == 'Automatic' else 'manual'}", placeholder="SAC_0001 or your own ID")
-            batch_id = cols[1].text_input("Independent synthesis batch ID", placeholder="BATCH_001")
-            st.caption("Enter precursor salt concentration or amount in the selected unit. Each element may have a different value; blanks remain pending.")
-            entered_concentrations = st.data_editor(pd.DataFrame([{"element": e, "precursor_mM": from_mM(context["concentrations_mM"].get(e) or base_concentration(e), register_unit, register_materials['solvent_volume_mL'])} for e in register_elements], columns=["element", "precursor_mM"]),
-                disabled=["element"], hide_index=True, width="stretch", column_config={"precursor_mM": st.column_config.NumberColumn("Precursor / " + register_unit, min_value=.000001, format="%.6f")}, key=f"register_concentrations_{origin}_{fingerprint([register_elements, register_unit, register_materials['solvent_volume_mL']])}")
-            pulse = cols[1].number_input("Pulse count", min_value=1, value=1, step=1)
-            cutoff = cols[0].text_input("Controlled cutoff temperature / °C", help="Enter the configured shutoff temperature; leave blank if unknown.")
-            measured = cols[1].text_input("Measured peak temperature / °C", help="Leave blank until measured; do not copy a setpoint into this field.")
-            voltage = cols[0].text_input("Voltage / V (optional)", value="32")
-            current = cols[1].text_input("Current / A (optional)", value="80")
-            precursor = st.text_input("Precursor system / recipe version", value=registration_process["precursor_family"])
-            support = st.text_input("Support batch / fixed system", value=registration_process["support_batch"])
-            protocol = st.text_input("Protocol version", value=registration_process["protocol_id"])
-            with st.expander('Per-element precursor defaults'):
-                registration_chemistry = render_precursor_editor(register_elements,
-                    planning_precursors(store, context, register_elements),
-                    f"register_chemistry_{origin}_{fingerprint(register_elements)}")
-            if st.form_submit_button("Register pending sample"):
+    tab4, tab1, tab_pending, tab_feedback, tab2, tab3 = st.tabs(["Fill batch table", "Experiment records", "Pending experiments", "Result feedback", "Bulk import / report", "Register sample"], key=f'sample_views_{origin}', on_change='rerun')
+    if tab4.open:
+        with tab4:
+            render_batch_panel(store, context, methods, ROOT)
+    if tab1.open:
+        with tab1:
+            render_records(store, samples, methods, concentration_text)
+    if tab_pending.open:
+        with tab_pending:
+            render_pending(store, samples, methods)
+    if tab_feedback.open:
+        with tab_feedback:
+            render_feedback(store, samples, methods)
+    if tab2.open:
+        with tab2:
+            st.write("Upload a compact **batch / icp / settings** workbook or its three CSV tables. The advanced **samples / icp / methods** format remains supported for legacy imports. Optional ICP values are recorded in W / wt%.")
+            compact = ROOT / "examples/compact_batch_template.xlsx"
+            if compact.exists(): st.download_button("Download compact batch template", compact.read_bytes(), "SACFactory_batch_template.xlsx")
+            st.download_button("Download bulk Excel template", (ROOT / "examples/bulk_import_template.xlsx").read_bytes(), "SACFactory_bulk_template.xlsx")
+            upload_nonce = st.session_state.get(f"upload_nonce_{origin}", 0)
+            uploads = st.file_uploader("Standard Excel, or sample and ICP CSV files", type=["xlsx", "csv"], accept_multiple_files=True, key=f"bulk_files_{origin}_{upload_nonce}")
+            overwrite = st.checkbox("Revise existing sample or method IDs (preserve history)", value=False, key=f"import_revision_{origin}")
+            if uploads:
                 try:
-                    from sacfactory.domain import validate_sample
-                    new = {"sample_id": sample_id, "batch_id": batch_id, "origin": origin, "elements": parse_elements(elements_text), "pulse_count": pulse, "temperature_C": measured, "pulse_limit_C": cutoff, "voltage_V": voltage, "current_A": current,
-                           "precursor_family": precursor, "support_batch": support, "protocol_id": protocol, "xrd": {"state": "PENDING", "source": "", "criteria": "", "reviewer": ""}, "notes": "Registered through the UI; measurements pending", "icp": []}
-                    new.update(register_materials, preparation_basis='User-declared preparation; protocol defaults if unchanged', concentration_input_unit=register_unit)
-                    new['electrical_input_kind'] = 'SETTING'
-                    new["concentrations_mM"] = {row["element"]: to_mM(None if pd.isna(row["precursor_mM"]) else row["precursor_mM"], register_unit, register_materials['solvent_volume_mL']) for row in entered_concentrations.to_dict("records")}
-                    new['precursors'] = normalize_precursors(registration_chemistry, new['elements'])
-                    store.put_many("sample", [validate_sample(new)], "sample_id")
-                    st.rerun()
-                except ValueError as exc:
+                    preview = preview_import([(file.name, file.getvalue()) for file in uploads], store, overwrite)
+                    if preview.rows:
+                        st.dataframe(pd.DataFrame(preview.rows), hide_index=True, width="stretch")
+                    if preview.method_changes:
+                        st.write("**Analytical method changes**")
+                        st.dataframe(pd.DataFrame(preview.method_changes), hide_index=True, width="stretch")
+                    if preview.queue_updates:
+                        st.caption(f"{len(preview.queue_updates)} matching reservations will be marked completed and linked to reported samples.")
+                    st.caption("Revision replaces each complete sample. Start from an export and retain all ICP rows. Source files are archived.")
+                    if st.button("Commit import to local database", type="primary"):
+                        result = commit_import(preview, store)
+                        st.session_state[f"last_import_{origin}"] = result
+                        st.session_state[f"upload_nonce_{origin}"] = upload_nonce + 1
+                        st.rerun()
+                except (ValueError, UnicodeError, KeyError) as exc:
                     st.error(str(exc))
+            if st.session_state.get(f"last_import_{origin}"):
+                result = st.session_state[f"last_import_{origin}"]
+                st.success(f"Last import: {result['samples']} samples, {result['methods']} method updates, {result['completed_tasks']} completed reservations.")
+    if tab3.open:
+        with tab3:
+            st.caption("Register recipes here; no measured values are generated. Report results using the standard template.")
+            id_mode = st.radio("Sample ID numbering", ["Automatic", "Manual"], key=f"register_id_mode_{origin}", horizontal=True)
+            elements_text = element_text_area("Target elements, separated by semicolons",
+                value=";".join(context["elements"]), key=f'register_elements_{origin}')
+            try:
+                register_elements = parse_elements(elements_text)
+            except ValueError as exc:
+                register_elements = []
+                st.error(str(exc))
+            from sacfactory.ui_preparation import preparation_inputs
+            from sacfactory.preparation import from_mM, to_mM
+            register_unit, register_materials = preparation_inputs(f'register_preparation_{origin}')
+            from sacfactory.experiment_defaults import shared_process_values
+            registration_process = shared_process_values(context)
+            with st.form("register_sample"):
+                cols = st.columns(2)
+                sample_id = cols[0].text_input("New sample ID", value=store.next_sample_ids()[0] if id_mode == "Automatic" else "", disabled=id_mode == "Automatic",
+                    key=f"new_sample_id_{origin}_{id_mode}_{store.next_sample_ids()[0] if id_mode == 'Automatic' else 'manual'}", placeholder="SAC_0001 or your own ID")
+                batch_id = cols[1].text_input("Independent synthesis batch ID", placeholder="BATCH_001")
+                st.caption("Enter precursor salt concentration or amount in the selected unit. Each element may have a different value; blanks remain pending.")
+                entered_concentrations = st.data_editor(pd.DataFrame([{"element": e, "precursor_mM": from_mM(context["concentrations_mM"].get(e) or base_concentration(e), register_unit, register_materials['solvent_volume_mL'])} for e in register_elements], columns=["element", "precursor_mM"]),
+                    disabled=["element"], hide_index=True, width="stretch", column_config={"precursor_mM": st.column_config.NumberColumn("Precursor / " + register_unit, min_value=.000001, format="%.6f")}, key=f"register_concentrations_{origin}_{fingerprint([register_elements, register_unit, register_materials['solvent_volume_mL']])}")
+                pulse = cols[1].number_input("Pulse count", min_value=1, value=1, step=1)
+                cutoff = cols[0].text_input("Controlled cutoff temperature / °C", help="Enter the configured shutoff temperature; leave blank if unknown.")
+                measured = cols[1].text_input("Measured peak temperature / °C", help="Leave blank until measured; do not copy a setpoint into this field.")
+                voltage = cols[0].text_input("Voltage / V (optional)", value="32")
+                current = cols[1].text_input("Current / A (optional)", value="80")
+                precursor = st.text_input("Precursor system / recipe version", value=registration_process["precursor_family"])
+                support = st.text_input("Support batch / fixed system", value=registration_process["support_batch"])
+                protocol = st.text_input("Protocol version", value=registration_process["protocol_id"])
+                with st.expander('Per-element precursor defaults'):
+                    registration_chemistry = render_precursor_editor(register_elements,
+                        planning_precursors(store, context, register_elements),
+                        f"register_chemistry_{origin}_{fingerprint(register_elements)}")
+                if st.form_submit_button("Register pending sample"):
+                    try:
+                        from sacfactory.domain import validate_sample
+                        new = {"sample_id": sample_id, "batch_id": batch_id, "origin": origin, "elements": parse_elements(elements_text), "pulse_count": pulse, "temperature_C": measured, "pulse_limit_C": cutoff, "voltage_V": voltage, "current_A": current,
+                               "precursor_family": precursor, "support_batch": support, "protocol_id": protocol, "xrd": {"state": "PENDING", "source": "", "criteria": "", "reviewer": ""}, "notes": "Registered through the UI; measurements pending", "icp": []}
+                        new.update(register_materials, preparation_basis='User-declared preparation; protocol defaults if unchanged', concentration_input_unit=register_unit)
+                        new['electrical_input_kind'] = 'SETTING'
+                        new["concentrations_mM"] = {row["element"]: to_mM(None if pd.isna(row["precursor_mM"]) else row["precursor_mM"], register_unit, register_materials['solvent_volume_mL']) for row in entered_concentrations.to_dict("records")}
+                        new['precursors'] = normalize_precursors(registration_chemistry, new['elements'])
+                        store.put_many("sample", [validate_sample(new)], "sample_id")
+                        st.rerun()
+                    except ValueError as exc:
+                        st.error(str(exc))
 
 elif page == "Materials & consumables":
     render_materials(store, context, samples)
@@ -546,10 +559,36 @@ elif page == "Next batch":
         st.info(state.info["reason"])
     count = st.number_input("Maximum experiments in the next batch", min_value=1, max_value=12, value=6, step=1)
     sac_gen_exists=(store.root/'sac_gen'/origin.lower()/'latest.json').exists()
-    use_sac_gen=st.checkbox('Use trained SAC-Gen for XRD acquisition and ICP forecasts',value=sac_gen_exists,
+    use_sac_gen=st.checkbox('Use trained SAC-Gen for XRD/STEM acquisition and ICP forecasts',value=sac_gen_exists,
         disabled=not sac_gen_exists,key=f'next_sac_gen_{origin}')
+    variant_registry=store.root/'sac_gen'/origin.lower()/'variants.json'
+    if use_sac_gen and variant_registry.exists():
+        registry=json.loads(variant_registry.read_text())
+        variants=list(registry.get('variants',{}))
+        selected=active_sac_pointer.get('name',registry.get('default','SAC-Gen-Diffusion'))
+        variant_key=f'next_sac_variant_{origin}'
+        if selected in variants and st.session_state.get(variant_key)!=selected:
+            st.session_state[variant_key]=selected
+        def change_saved_variant():
+            from sacfactory.sac_gen import activate_variant
+            try:
+                activate_variant(store.root,origin,st.session_state[variant_key],store.all('sample'))
+                st.session_state.pop(f'preview_{origin}',None)
+                st.session_state.pop(f'plan_note_{origin}',None)
+            except (ValueError,KeyError,OSError) as exc:
+                st.session_state[f'variant_error_{origin}']=str(exc)
+        st.selectbox('SAC-Gen prediction model',variants,key=variant_key,on_change=change_saved_variant,
+            help='Load a saved learner variant for Next batch and pending reforecasts. No retraining is started.')
+        if st.session_state.get(f'variant_error_{origin}'):
+            st.error(st.session_state.pop(f'variant_error_{origin}'))
+    if use_sac_gen and active_sac_pointer:
+        st.caption('Saved model: '+active_sac_pointer.get('name','SAC-Gen'))
+    strategy_key=f'sac_gen_strategy_{origin}'
+    if strategy_key in st.session_state:
+        st.session_state[strategy_key]=st.session_state[strategy_key].replace('XRD/STEM','XRD')
     sac_gen_strategy=st.selectbox('SAC-Gen proposal objective',['Balanced boundary learning',
-        'High-loading XRD failure mapping','XRD pass region validation'],disabled=not use_sac_gen,key=f'sac_gen_strategy_{origin}')
+        'High-loading XRD failure mapping','XRD pass region validation'],format_func=lambda value:value.replace('XRD','XRD/STEM'),
+        disabled=not use_sac_gen,key=strategy_key)
     generate_saved = st.button("Generate batch preview", type="primary",
         help='Uses the saved operating range. After editing fields below, use Save range and generate batch.')
     generate_after_save = st.session_state.pop(f'generate_after_save_{origin}', False)
@@ -926,7 +965,7 @@ elif page == "About":
     st.write("An experimental workbench for single-atom catalyst synthesis, data management, SAC-Gen prediction and batch planning.")
     st.dataframe(pd.DataFrame([
         {"Module": "Experiments", "Capabilities": "Element selection, precursor quantities, preparation conditions, editable records and pending results"},
-        {"Module": "SAC-Gen", "Capabilities": "Mass-conserving loading prediction and XRD PASS/FAIL probabilities"},
+        {"Module": "SAC-Gen", "Capabilities": "Mass-conserving loading prediction and XRD/STEM PASS/FAIL probabilities"},
         {"Module": "Validation", "Capabilities": "Masked batch and element tests, endpoint metrics and prediction agreement"},
         {"Module": "Benchmarks", "Capabilities": "Matched statistical baselines and recorded-pool acquisition replay"},
         {"Module": "Planning", "Capabilities": "Constrained recommendations, manual amendment and pending experiment management"},
