@@ -1,6 +1,7 @@
 """Serialize the current synthetic campaign into inspectable data-release files."""
 import argparse
 import csv
+import gzip
 import hashlib
 import json
 from pathlib import Path
@@ -27,8 +28,9 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output',type=Path,default=ROOT.parent/'SACFactory-demo-data')
     args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=True)
-    from sacfactory.bootstrap import load_demo_seed
-    content=load_demo_seed(ROOT);raw=json.dumps(content,ensure_ascii=False,separators=(',',':')).encode('utf-8')
+    seed_path=ROOT/'examples/demo_seed.json'
+    raw=seed_path.read_bytes() if seed_path.is_file() else gzip.decompress(Path(str(seed_path)+'.gz').read_bytes())
+    content=json.loads(raw)
     samples=[];icp_rows=[];ledgers=[];batch_counts={}
     for s in content['samples']:
         b=s['demo_mass_balance'];latent=s['demo_observation']['screening_latent'];outcome=screen(s,{})
