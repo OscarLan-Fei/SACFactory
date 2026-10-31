@@ -3,6 +3,8 @@ import copy
 import json
 import math
 import unittest
+from pathlib import Path
+from unittest.mock import patch
 
 import numpy as np
 
@@ -22,6 +24,24 @@ from test_loading import campaign as loading_campaign
 
 
 class MixingTests(unittest.TestCase):
+    def test_reference_accepts_windows_line_endings_and_rejects_modified_values(self):
+        from sacfactory.mixing import RESOURCE_ROOT
+        original = Path.read_bytes
+        path = RESOURCE_ROOT / 'MiedemaLiquidDeltaHf.tsv'
+        raw = path.read_bytes().replace(b'\r\n', b'\n')
+        def read_windows(item):
+            return raw.replace(b'\n', b'\r\n') if item == path else original(item)
+        mixing_table.cache_clear()
+        try:
+            with patch.object(Path, 'read_bytes', read_windows):
+                self.assertEqual(len(mixing_table()), 2628)
+            mixing_table.cache_clear()
+            with patch.object(Path, 'read_bytes', lambda item: raw+b'changed' if item == path else original(item)):
+                with self.assertRaisesRegex(ValueError, 'SHA-256'):
+                    mixing_table()
+        finally:
+            mixing_table.cache_clear()
+
     def test_source_integrity_original_scope_and_primary_spot_checks(self):
         table = mixing_table()
         self.assertEqual(len(table), 2628)
