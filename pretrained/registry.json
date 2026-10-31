@@ -1,0 +1,13 @@
+{
+  "format": "sac-gen-public-inference-v1",
+  "models": {
+    "SAC-Gen-Diffusion": {
+      "file": "sac_gen_diffusion.json",
+      "sha256": "5c5fd0ba0ae68c46d2d359bccd6e5d97c2dcfc9620be3cf68cfda4559425ba9c"
+    },
+    "SAC-Gen-GB": {
+      "file": "sac_gen_gb.json",
+      "sha256": "f1e2278fc05f5ed93d1c81d8f12c91113d7ce5e73d5d98eb112dda5bb4f0b6de"
+    }
+  }
+}
