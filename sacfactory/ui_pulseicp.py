@@ -181,7 +181,7 @@ def render_pulseicp(samples, origin, root):
     with st.expander('Capture, aggregation, redispersion and escape: optional physical diagnostic'):
         ids=select_targets('Structural-prior samples',[s['sample_id'] for s in selected],str,
             key=f'picp_prior_samples_{origin}')
-        st.caption('This XRD prior is a physical assumption; it is separate from the trained probability model.')
+        st.caption('This XRD/STEM prior is a physical assumption; it is separate from the trained probability model.')
         if st.button('Calculate structural prior diagnostic',disabled=not ids,key=f'picp_prior_run_{origin}'):
             try:
                 from ._pulseicp.screening_prior import predict_xrd_prior

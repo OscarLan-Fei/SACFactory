@@ -16,7 +16,7 @@ from ._pulseicp.composition import Composition, component_features, decode_compo
 from ._pulseicp.references import digest
 
 ORIGINS = {'REAL': 'EXPERIMENTAL', 'DEMO': 'SIMULATED'}
-FAMILIES = ['Gaussian residual', 'Conditional diffusion']
+FAMILIES = ['Gaussian residual', 'Conditional diffusion', 'Gradient boosting residual']
 ROTATING_CV = 'Rotating batch cross-validation'
 PROTOCOLS = ['Batch holdout', 'Chronological replay', 'Unseen element transfer', 'Singles to mixtures', ROTATING_CV]
 
@@ -133,6 +133,12 @@ def fit(samples, origin, family=FAMILIES[0], settings=None, physics=None):
         raise ValueError('No mass-bound-compatible quantified training specimens; inspect eligibility.')
     from .token_residual import FAMILIES as TOKEN_FAMILIES,TokenResidualEnsemble
     cls=TokenResidualEnsemble if family in TOKEN_FAMILIES else ResidualEnsemble
+    if family=='Gradient boosting residual':
+        from .gb_residual import GBResidual
+        cls=GBResidual
+    if family in TOKEN_FAMILIES and settings.get('training_variant')=='validated-token-v1':
+        from .tuned_token_residual import TunedTokenResidualEnsemble
+        cls=TunedTokenResidualEnsemble
     model = cls(family, settings, physics).fit(data, np.arange(len(data.records)))
     model.sacfactory_process_key = next(iter(contexts))
     if cache is not None:

@@ -46,7 +46,9 @@ def matrix_chart(frame, x, y, value, x_order, y_order, title, scheme='tealblues'
 
 def render_matrix(chart, rows, key):
     with st.container(height=min(680, row_height(rows) + 180), border=False, key='matrix_scroll_' + key):
-        st.altair_chart(chart, width='content')
+        # The spec is assembled by our chart helpers. Avoid revalidating every
+        # matrix cell against the same JSON schema on each selection change.
+        st.vega_lite_chart(spec=chart.to_dict(validate=False), width='content')
     st.caption('Scroll large matrices to inspect all selected labels. Gray cells are unavailable or intentionally unevaluated, not zero-valued measurements.')
 
 

@@ -115,13 +115,19 @@ def parameter_rates(frame, parameter, bins=5):
 
 def correlations(frame, columns, minimum_pairs=3):
     """Pairwise Spearman association, with paired n and no significance claims."""
+    if len(columns) < 2:
+        return pd.DataFrame(columns=["parameter_1", "parameter_2", "paired_n", "spearman_rho"])
+    values = frame[columns]
+    # pandas reranks the overlapping observations for each incomplete pair.
+    # Ranking each full column once would change results when missingness differs.
+    coefficients = values.corr(method="spearman", min_periods=minimum_pairs)
+    observed = values.notna().astype("int64")
+    paired_counts = observed.T.dot(observed)
     rows = []
     for i, left in enumerate(columns):
         for right in columns[i + 1:]:
-            pair = frame[[left, right]].dropna()
-            n = len(pair)
-            rho = None
-            if n >= minimum_pairs and all(pair[c].nunique() > 1 for c in (left, right)):
-                rho = float(pair[left].rank().corr(pair[right].rank()))
+            n = int(paired_counts.at[left, right])
+            value = coefficients.at[left, right]
+            rho = float(value) if pd.notna(value) else None
             rows.append({"parameter_1": left, "parameter_2": right, "paired_n": n, "spearman_rho": rho})
     return pd.DataFrame(rows, columns=["parameter_1", "parameter_2", "paired_n", "spearman_rho"])

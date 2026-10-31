@@ -1,4 +1,4 @@
-"""Post-result agreement diagnostics and XRD probability calibration."""
+"""Post-result agreement diagnostics and XRD/STEM probability calibration."""
 import altair as alt
 import numpy as np
 import pandas as pd
@@ -18,7 +18,7 @@ def render(samples,points):
         chart=alt.Chart(values).mark_point(filled=True,size=40,opacity=.65).encode(
             x=alt.X('sample_order:Q',title='Evaluated sample index'),
             y=alt.Y('validation_score:Q',title='Prediction agreement score / 100',scale=alt.Scale(domain=[0,100])),
-            color=alt.Color('recorded_xrd:N',title='Recorded XRD',scale=alt.Scale(domain=['PASS','FAIL','Unknown'],range=['#268D88','#D46A27','#71808C'])),
+            color=alt.Color('recorded_xrd:N',title='Recorded XRD/STEM',scale=alt.Scale(domain=['PASS','FAIL','Unknown'],range=['#268D88','#D46A27','#71808C'])),
             tooltip=['sample_id:N','composition:N','batch_id:N','validation_score:Q','icp_agreement_score:Q',
                      'xrd_pass_agreement_score:Q','xrd_failure_probability:Q','recorded_xrd:N'])
         st.altair_chart(chart.properties(height=300),width='stretch')
@@ -28,16 +28,16 @@ def render(samples,points):
              'xrd_failure_observed','missing_score_endpoints']
     st.dataframe(samples[columns],hide_index=True,width='stretch')
     binary=points.drop_duplicates(['fold','sample_id']).dropna(subset=['xrd_failure_probability','xrd_failure_observed']).copy() if len(points) else points
-    st.write('**XRD failure probability calibration**')
+    st.write('**XRD/STEM failure probability calibration**')
     if not len(binary):
-        st.info('No paired XRD probability predictions. Inspect XRD class counts and fold fitting gates.')
+        st.info('No paired XRD/STEM probability predictions. Inspect XRD/STEM class counts and fold fitting gates.')
         return
     binary['probability_bin']=np.minimum((binary.xrd_failure_probability*10).astype(int),9)
     grouped=binary.groupby('probability_bin',as_index=False).agg(predicted_failure_probability=('xrd_failure_probability','mean'),
         observed_failure_fraction=('xrd_failure_observed','mean'),samples=('sample_id','size'))
     dots=alt.Chart(grouped).mark_point(filled=True,size=80).encode(
-        x=alt.X('predicted_failure_probability:Q',title='Mean predicted XRD failure probability',scale=alt.Scale(domain=[0,1])),
-        y=alt.Y('observed_failure_fraction:Q',title='Observed XRD failure fraction',scale=alt.Scale(domain=[0,1])),
+        x=alt.X('predicted_failure_probability:Q',title='Mean predicted XRD/STEM failure probability',scale=alt.Scale(domain=[0,1])),
+        y=alt.Y('observed_failure_fraction:Q',title='Observed XRD/STEM failure fraction',scale=alt.Scale(domain=[0,1])),
         size=alt.Size('samples:Q',title='Samples in bin'),tooltip=['predicted_failure_probability:Q','observed_failure_fraction:Q','samples:Q'])
     ideal=alt.Chart(pd.DataFrame({'v':[0,1]})).mark_line(strokeDash=[4,4],color='#8a98a6').encode(x='v:Q',y='v:Q')
     st.altair_chart((dots+ideal).properties(height=300),width='stretch')

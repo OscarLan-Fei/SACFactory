@@ -7,9 +7,9 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import balanced_accuracy_score, roc_auc_score
 
 BINARY_ENDPOINTS = {
-    'screening': 'Joint ICP/XRD screening pass',
+    'screening': 'Joint ICP and XRD/STEM screening pass',
     'icp_pass': 'ICP judgment pass',
-    'xrd_pass': 'XRD judgment pass',
+    'xrd_pass': 'XRD/STEM structural assessment pass',
     'stem_confirmed': 'STEM confirmation',
     'burnout': 'Complete sample burnout',
 }

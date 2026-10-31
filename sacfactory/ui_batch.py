@@ -78,9 +78,9 @@ def render_batch_panel(store, context, methods, root):
         precursor = st.text_input("Batch precursor system", process_defaults["precursor_family"], key=f"entry_precursor_{origin}")
         support = st.text_input("Batch support system", process_defaults["support_batch"], key=f"entry_support_{origin}")
         protocol = st.text_input("Batch protocol", process_defaults["protocol_id"], key=f"entry_protocol_{origin}")
-        xrd_source = st.text_input("Batch XRD source record", key=f"entry_xrd_source_{origin}")
-        xrd_criteria = st.text_input("Batch XRD comparison criteria", key=f"entry_xrd_criteria_{origin}")
-        reviewer = st.text_input("XRD reviewer", key=f"entry_reviewer_{origin}")
+        xrd_source = st.text_input("Batch XRD/STEM source record", key=f"entry_xrd_source_{origin}")
+        xrd_criteria = st.text_input("Batch XRD/STEM comparison criteria", key=f"entry_xrd_criteria_{origin}")
+        reviewer = st.text_input("XRD/STEM reviewer", key=f"entry_reviewer_{origin}")
         stem_source = st.text_input("Optional STEM source record", key=f"entry_stem_source_{origin}")
         stem_reviewer = st.text_input("Optional STEM reviewer", key=f"entry_stem_reviewer_{origin}")
     settings = {"origin": origin, "batch_id": batch_id, "target_elements": ";".join(elements), "method_id": "",
@@ -88,10 +88,10 @@ def render_batch_panel(store, context, methods, root):
                 "xrd_source": xrd_source, "xrd_criteria": xrd_criteria, "xrd_reviewer": reviewer,
                 "stem_source": stem_source, "stem_reviewer": stem_reviewer}
     settings.update(materials, precursor_input_unit=unit)
-    st.caption("Save and continue with partial results. Choose ICP/XRD PASS or FAIL directly; files, reviewers and measured values are optional. This table records your judgments and does not analyze assays or spectra.")
+    st.caption("Save and continue with partial results. Choose ICP/XRD/STEM PASS or FAIL directly; files, reviewers and measured values are optional. This table records your judgments and does not analyze assays or spectra.")
     j1, j2, j3 = st.columns(3)
     all_icp = j1.selectbox("ICP judgment for all rows", ["PENDING", "PASS", "FAIL"], key=f"entry_all_icp_{origin}")
-    all_xrd = j2.selectbox("XRD judgment for all rows", ["PENDING", "PASS", "FAIL"], key=f"entry_all_xrd_{origin}")
+    all_xrd = j2.selectbox("XRD/STEM judgment for all rows", ["PENDING", "PASS", "FAIL"], key=f"entry_all_xrd_{origin}")
     if j3.button("Apply judgments to all rows", key=f"entry_apply_judgments_{origin}"):
         stored = st.session_state.get(f"entry_cells_{origin}", {})
         for row in stored.get("batch", []): row.update(icp_result=all_icp, xrd_result=all_xrd)
@@ -119,13 +119,13 @@ def render_batch_panel(store, context, methods, root):
     st.caption('Enter a value with mmol or mM; mixed recipes accept per-element entries such as Fe:1 mmol; Co:0.5 mmol.')
     batch = st.data_editor(pd.DataFrame(rows), hide_index=True, width="stretch", key=f"batch_grid_{sig}",
         disabled=["target_elements"] + (["sample_id"] if automatic else []),
-        column_order=["sample_id", "sample_condition", "target_elements", "concentration_mM", "pan_mass_g", "solvent_volume_mL", "pulse", "pulse_limit_C", "icp_result", "xrd_result", "stem_result", "temperature_C", "voltage_V", "current_A"],
+        column_order=["sample_id", "sample_condition", "target_elements", "concentration_mM", "pan_mass_g", "solvent_volume_mL", "pulse", "pulse_limit_C", "icp_result", "xrd_result", "temperature_C", "voltage_V", "current_A"],
         column_config={'concentration_mM': st.column_config.TextColumn('Precursor salt / ' + unit, help='Explicit mM or mmol units are also accepted in each cell.'),
                        'pan_mass_g': st.column_config.NumberColumn('PAN / g', min_value=.000001),
                        'solvent_volume_mL': st.column_config.NumberColumn('DMF / mL', min_value=.000001),
                        "sample_condition": st.column_config.SelectboxColumn("Sample condition", options=list(SAMPLE_CONDITIONS)), "icp_result": st.column_config.SelectboxColumn(options=["PENDING", "PASS", "FAIL"]),
-                       "xrd_result": st.column_config.SelectboxColumn(options=["PENDING", "PASS", "FAIL"]),
-                       "stem_result": st.column_config.SelectboxColumn(options=["NOT_TESTED", "CONFIRMED", "NOT_CONFIRMED", "INCONCLUSIVE"])})
+                       "xrd_result": st.column_config.SelectboxColumn("XRD/STEM assessment", options=["PENDING", "PASS", "FAIL"]),
+                       "stem_result": None})
     if automatic:
         # Enforce automatic IDs independently of client-side editor restrictions.
         batch["sample_id"] = next_ids

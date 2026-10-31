@@ -4,7 +4,7 @@ import copy
 import pandas as pd
 import streamlit as st
 
-from .domain import SAMPLE_CONDITIONS
+from .domain import SAMPLE_CONDITIONS, structural_assessment
 from .manual import element_rows, apply_element_rows, save_manual_revisions
 from .planning import fingerprint
 from .reagent_links import link_precursors, catalogue_links
@@ -25,7 +25,7 @@ def condition_rows(samples):
         **{k: s.get(k) for k in CONDITION_FIELDS},
         'sample_condition': s.get('sample_condition') or 'NOT_RECORDED',
         'icp_state': s.get('icp_review', {}).get('state', 'AUTO'),
-        'xrd_state': s.get('xrd', {}).get('state', 'PENDING'),
+        'xrd_state': structural_assessment(s)[0],
         'stem_state': s.get('stem', {}).get('state', 'NOT_TESTED')} for s in samples]
 
 
@@ -127,8 +127,8 @@ def render_record_tables(store, samples, methods):
                 'concentration_summary_mM': st.column_config.TextColumn('Metal concentration / mM', help='Edit the selected element rows below.'),
                 'amount_summary_mmol': st.column_config.TextColumn('Metal amount / mmol', help='Derived using each sample DMF volume. Edit element rows below.'),
                 'icp_state': st.column_config.SelectboxColumn('ICP judgment', options=['AUTO', 'PENDING', 'PASS', 'FAIL']),
-                'xrd_state': st.column_config.SelectboxColumn('XRD judgment', options=['PENDING', 'PASS', 'FAIL']),
-                'stem_state': st.column_config.SelectboxColumn('Optional STEM', options=['NOT_TESTED', 'CONFIRMED', 'NOT_CONFIRMED', 'INCONCLUSIVE'])})
+                'xrd_state': st.column_config.SelectboxColumn('XRD/STEM judgment', options=['PENDING', 'PASS', 'FAIL']),
+                'stem_state': None})
         edited_details = details
         if details:
             st.write('**Precursor concentrations, ICP and linked reagents**')

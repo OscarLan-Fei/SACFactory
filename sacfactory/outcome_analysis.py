@@ -20,14 +20,19 @@ def enriched_frame(samples, methods, origin, elements=()):
     if not chemistry.empty:
         extra = [c for c in chemistry if c not in base or c == 'sample_id']
         base = base.merge(chemistry[extra], on='sample_id', how='left', validate='one_to_one')
+    return include_elements(base, records, elements)
+
+
+def include_elements(frame, samples, elements):
+    """Add selectable membership columns without rebuilding chemical summaries."""
     additions = {}
     for e in elements:
         if e not in ELEMENTS:
             raise ValueError('Select a periodic-table element.')
-        if e + '_mM' not in base:
+        if e + '_mM' not in frame:
             additions[e + '_mM'] = float('nan')
-        additions[e + '_present'] = [int(e in sample['elements']) for sample in records]
-    return pd.concat([base, pd.DataFrame(additions, index=base.index)], axis=1).copy()
+        additions[e + '_present'] = [int(e in sample['elements']) for sample in samples]
+    return pd.concat([frame, pd.DataFrame(additions, index=frame.index)], axis=1).copy()
 
 
 def variable_groups(frame, elements):

@@ -17,6 +17,16 @@ def invalidate_previews(origin):
         st.session_state.pop(key, None)
 
 
+def audit_export_bytes(store):
+    """Build an audit download on demand, using its own exported record snapshot."""
+    payload = store.export()
+    methods = {method['method_id']: method for method in payload['methods']}
+    payload.update(rule_version=RULE_VERSION, current_labels={
+        sample['sample_id']: screen(sample, methods) for sample in payload['samples']
+    })
+    return json.dumps(payload, ensure_ascii=False, indent=2).encode('utf-8')
+
+
 def render_records(store, samples, methods, concentration_text):
     origin = store.origin
     notice("records", origin)
@@ -29,7 +39,7 @@ def render_records(store, samples, methods, concentration_text):
             "Concentration / mM": concentration_text(s["concentrations_mM"]), "Pulse count": s["pulse_count"],
             "Measured peak / °C": s.get("temperature_C"), "Cutoff / °C": s.get("pulse_limit_C"),
             "Voltage / V": s.get("voltage_V"), "Current / A": s.get("current_A"),
-            "Screening status": STATUS_NAMES[result["status"]], "ICP": result["icp"], "XRD": result["xrd"], "STEM": result["stem"]})
+            "Screening status": STATUS_NAMES[result["status"]], "ICP": result["icp"], "Structural assessment": result["xrd"]})
     if rows:
         with st.expander('Screening summary'):
             st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
@@ -75,7 +85,7 @@ def render_records(store, samples, methods, concentration_text):
             st.dataframe(assays[["element", "value", "unit", "flag", "method_id", "source"]], hide_index=True, width="stretch", column_config={"value": st.column_config.TextColumn("W / wt%")})
         with st.expander("Edit experiment data", expanded=True):
             render_sample_editor(store, sample, methods)
-        with st.expander("Update ICP / XRD judgments / optional STEM (revision history retained)"):
+        with st.expander("Update ICP / XRD/STEM judgments (revision history retained)"):
             with st.form("xrd_stem_update"):
                 actual_batch = st.text_input("Actual synthesis batch ID", value=sample["batch_id"], help="Replace UNKNOWN after the actual experiment. A proposal ID is not an independent synthesis batch.")
                 observed_temperature = st.text_input("Recorded measured peak / C", value="" if sample.get("temperature_C") is None else str(sample["temperature_C"]))
@@ -88,9 +98,9 @@ def render_records(store, samples, methods, concentration_text):
                     current_icp = "Keep existing outcome"
                 icp_state = st.selectbox("ICP judgment", icp_states, index=icp_states.index(current_icp))
                 st.caption("PASS/FAIL judgments can be saved immediately. Files, values and reviewer details are optional. Record your judgment; assays and spectra are not analyzed here.")
-                xrd_state = st.selectbox("XRD relevant-phase criterion", ["PENDING", "PASS", "FAIL"], index=["PENDING", "PASS", "FAIL"].index(sample["xrd"]["state"]))
-                xfile = st.file_uploader("Optional: archive raw XRD file", key=f"xrd_raw_{origin}_{sample['sample_id']}")
-                source = st.text_input("XRD source / file record", value=sample["xrd"].get("source", ""))
+                xrd_state = st.selectbox("XRD/STEM relevant-phase criterion", ["PENDING", "PASS", "FAIL"], index=["PENDING", "PASS", "FAIL"].index(sample["xrd"]["state"]))
+                xfile = st.file_uploader("Optional: archive raw XRD/STEM file", key=f"xrd_raw_{origin}_{sample['sample_id']}")
+                source = st.text_input("XRD/STEM source / file record", value=sample["xrd"].get("source", ""))
                 criteria = st.text_input("Comparison criteria (support background / relevant phases / method)", value=sample["xrd"].get("criteria", ""))
                 reviewer = st.text_input("Reviewer", value=sample["xrd"].get("reviewer", ""))
                 stem = sample.get("stem", {})
@@ -121,5 +131,5 @@ def render_records(store, samples, methods, concentration_text):
     cols = st.columns(3)
     cols[0].download_button("Export samples CSV", csv_bytes(ss, SAMPLE_COLUMNS), "samples.csv", mime="text/csv")
     cols[1].download_button("Export ICP long table", csv_bytes(ii, ICP_COLUMNS), "icp.csv", mime="text/csv")
-    payload = {**store.export(), "rule_version": RULE_VERSION, "current_labels": {s["sample_id"]: screen(s, methods) for s in samples}}
-    cols[2].download_button("Export data and audit JSON", json.dumps(payload, ensure_ascii=False, indent=2).encode("utf-8"), f"{origin.lower()}_audit_export.json", mime="application/json")
+    cols[2].download_button("Export data and audit JSON", lambda: audit_export_bytes(store),
+        f"{origin.lower()}_audit_export.json", mime="application/json", on_click='ignore')

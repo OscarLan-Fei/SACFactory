@@ -13,12 +13,18 @@ from sklearn.metrics import mean_absolute_error,mean_squared_error,r2_score,roc_
 from threadpoolctl import threadpool_limits
 
 from .weighted_validation import collect,split_records,element_features,ROTATING_CV,PROTOCOLS
+from .validation_groups import RANDOM_RECIPE_CV, assert_mask
 from .compute_runtime import jobs,emit
 from .planning import fingerprint
 from .prediction_agreement import component_score
 
-MODELS=['Mean / prevalence','Ridge / logistic','Random forest','Gradient boosting','Gaussian process','SAC-Gen']
+MODELS=['Mean / prevalence','Ridge / logistic','Random forest','Gradient boosting','Gaussian process',
+    'Data-only Gaussian process','Data-only Random forest','Data-only Gradient boosting',
+    'Scientific descriptors Gradient boosting','Science prior (fixed)','SAC-Gen',
+    'SAC-Gen-Diffusion','SAC-Gen-GB']
 VERSION='matched-icp-xrd-baselines-v1'
+PUBLIC_MODELS=['Data-only Gaussian process','Data-only Random forest','Data-only Gradient boosting',
+    'Scientific descriptors Gradient boosting','Science prior (fixed)','SAC-Gen-Diffusion','SAC-Gen-GB']
 
 
 def estimators(name,dimension,seed):
@@ -36,6 +42,31 @@ def estimators(name,dimension,seed):
 
 
 def fitted_baseline(train,test,model,profile,seed=42):
+    if model.startswith(('Data-only ','Scientific descriptors ')) or model=='Science prior (fixed)':
+        if model.startswith('Scientific descriptors '):
+            from .scientific_descriptors_model import ScientificDescriptorModel
+            fitted=ScientificDescriptorModel(model.removeprefix('Scientific descriptors '),seed).fit_records(train,train[0]['sample']['origin'])
+            detail={**fitted.info,'model_id':fitted.model_id}
+        elif model.startswith('Data-only '):
+            from .data_only import DataOnlyModel
+            fitted=DataOnlyModel(model.removeprefix('Data-only '),seed).fit_records(train,train[0]['sample']['origin'])
+            detail={**fitted.info,'model_id':fitted.model_id}
+        else:
+            from .science_only import SciencePriorModel
+            fitted=SciencePriorModel(train[0]['sample']['origin'])
+            detail={'model_id':fitted.model_id,'training_ids':[],'fitted_to_current_experiments':False,
+                'input_profile':'Fixed mass/thermal/mixing/kinetic priors; empirical anchors disclosed'}
+        predictions=fitted.predict([r['sample'] for r in test]);values=[]
+        for r,p in zip(test,predictions):
+            members={v['element']:v['predicted_mean_w_wt_percent'] for v in p['icp_predictions']}
+            symbols=r['sample']['elements'];actual=sum(r['assays'][e] for e in symbols) if all(e in r['assays'] for e in symbols) else None
+            values.extend({'sample_id':r['sample']['sample_id'],'batch_id':r['sample']['batch_id'],'element':e,
+                'observed_w_wt_percent':r['assays'].get(e),'predicted_w_wt_percent':members.get(e),
+                'composition':'+'.join(symbols),'observed_total_w_wt_percent':actual,
+                'predicted_total_w_wt_percent':p['predicted_total_wt_percent'],
+                'xrd_pass_observed':r['outcomes']['xrd_pass'],'xrd_pass_predicted':p['p_xrd_pass'],
+                'xrd_pass_threshold':p['xrd_pass_threshold'],'predicted_xrd_state':p['predicted_xrd_state']} for e in symbols)
+        return values,detail
     from . import pulseicp_bridge as bridge
     # Match the neural loading learner's eligible quantitative training targets.
     prepared=bridge.prepare([r['sample'] for r in train],train[0]['sample']['origin'])
@@ -96,6 +127,11 @@ def metrics(frame,scale=.03,weight=.6):
     if len(binary):
         y=binary.xrd_pass_observed.to_numpy();p=binary.xrd_pass_predicted.to_numpy()
         result.update(XRD_Brier=float(np.mean((y-p)**2)),XRD_ROC_AUC=float(roc_auc_score(y,p)) if len(set(y))==2 else None)
+        from sklearn.metrics import balanced_accuracy_score
+        threshold=binary.xrd_pass_threshold.fillna(.5).to_numpy() if 'xrd_pass_threshold' in binary else np.full(len(binary),.5)
+        result.update(XRD_balanced_accuracy_selected_threshold=float(balanced_accuracy_score(y,p>=threshold)) if len(set(y))==2 else None,
+            XRD_FAIL_recall_selected_threshold=float(np.mean(p[y==0]<threshold[y==0])) if (y==0).any() else None,
+            XRD_balanced_accuracy_0_5=float(balanced_accuracy_score(y,p>=.5)) if len(set(y))==2 else None)
     scores=[]
     for _,part in frame.groupby(['fold','sample_id']):
         if part[['observed_w_wt_percent','predicted_w_wt_percent']].notna().all().all() and pd.notna(part.iloc[0].xrd_pass_predicted) and pd.notna(part.iloc[0].xrd_pass_observed):
@@ -125,7 +161,7 @@ def compare(samples,methods,origin,targets,models=None,profile='chemistry_pulsei
             raise ValueError('Saved SAC-Gen predictions do not match the comparison data/settings.')
     for index,(train,test,fold,fold_targets) in enumerate(splits,1):
         emit({'stage':'Matched model comparison','fold':index,'folds':len(splits)})
-        assert not {r['sample']['batch_id'] for r in train}&{r['sample']['batch_id'] for r in test}
+        assert_mask([r['sample'] for r in train], [r['sample'] for r in test], protocol == RANDOM_RECIPE_CV)
         partition={'fold':fold,'train_ids':[r['sample']['sample_id'] for r in train],
             'test_ids':[r['sample']['sample_id'] for r in test],
             'train_batches':sorted({r['sample']['batch_id'] for r in train}),
@@ -144,9 +180,14 @@ def compare(samples,methods,origin,targets,models=None,profile='chemistry_pulsei
                         raise ValueError('Saved SAC-Gen fold membership differs.')
                     values=frame.loc[frame.fold==fold].to_dict('records')
                     detail={'reused_matching_OOF_predictions':True,'family':sac_family,'source_model_id':old['pulseicp'].get('model_id')}
-                elif model=='SAC-Gen':
+                elif model in {'SAC-Gen','SAC-Gen-Diffusion','SAC-Gen-GB'}:
                     from .sac_gen import SACGen
-                    fitted=SACGen(sac_family,sac_settings,profile).fit([r['sample'] for r in train],origin,methods)
+                    from .pulseicp_bridge import configuration
+                    settings = dict(sac_settings or configuration()['model'])
+                    settings['crossfit_grouping'] = 'recipe' if protocol == RANDOM_RECIPE_CV else 'batch'
+                    selected_family={'SAC-Gen-Diffusion':'Diffusion Transformer',
+                        'SAC-Gen-GB':'Gradient boosting residual'}.get(model,sac_family)
+                    fitted=SACGen(selected_family,settings,profile).fit([r['sample'] for r in train],origin,methods)
                     prediction=fitted.predict([r['sample'] for r in test]);values=[]
                     for r,p in zip(test,prediction):
                         measured={v['element']:v['predicted_mean_w_wt_percent'] for v in p['icp_predictions']}
@@ -155,8 +196,9 @@ def compare(samples,methods,origin,targets,models=None,profile='chemistry_pulsei
                             'composition':'+'.join(r['sample']['elements']),
                             'observed_total_w_wt_percent':sum(r['assays'][v] for v in r['sample']['elements']) if all(v in r['assays'] for v in r['sample']['elements']) else None,
                             'predicted_total_w_wt_percent':p['predicted_total_wt_percent'],
-                            'xrd_pass_observed':r['outcomes']['xrd_pass'],'xrd_pass_predicted':p['p_xrd_pass']} for e in r['sample']['elements'])
-                    detail={'model_id':fitted.model_id,'family':sac_family,'settings':fitted.settings,'XRD':fitted.xrd_info}
+                            'xrd_pass_observed':r['outcomes']['xrd_pass'],'xrd_pass_predicted':p['p_xrd_pass'],
+                            'xrd_pass_threshold':p.get('xrd_pass_threshold',.5),'predicted_xrd_state':p.get('predicted_xrd_state')} for e in r['sample']['elements'])
+                    detail={'model_id':fitted.model_id,'family':selected_family,'settings':fitted.settings,'XRD':fitted.xrd_info}
                 else:values,detail=fitted_baseline(train,test,model,profile,seed)
                 rows.extend({**v,'model':model,'fold':fold} for v in values if v['element'] in fold_targets)
                 partition['models'][model]=detail
@@ -188,4 +230,4 @@ def compare(samples,methods,origin,targets,models=None,profile='chemistry_pulsei
         'batches_per_fold':batches_per_fold,'protocol':protocol,'max_folds':max_folds,'comparison_rows':'Common eligible endpoint intersection across all selected models',
         'regression_weighting':'Equal specimen, equal selected member within specimen','accuracy_scale_wt_percent':scale,'agreement_icp_weight':agreement_weight,
         'audit':audit.astype(object).where(pd.notna(audit),None).to_dict('records'),
-        'note':'Predictive model comparison, not an acquisition-policy comparison. Models share outer batches, quantitative eligibility and pre-synthesis descriptor profile. SAC-Gen adds learned loading summaries to its XRD head. Baseline hyperparameters are fixed, not tuned on outer tests. Kernel optimizers are disabled; this is a declared fixed-budget GP baseline. These are development cross-validation estimates, not independent confirmation of superiority.'}
+        'note':'Predictive model comparison, not an acquisition-policy comparison. Models share declared outer masks, quantitative eligibility and pre-synthesis descriptor profile. Random recipe mode permits batch overlap but excludes identical recipes and specimens from the opposing pool. SAC-Gen adds cross-fitted loading summaries to its XRD head. Baseline hyperparameters are fixed, not tuned on outer tests. Kernel optimizers are disabled. These are development cross-validation estimates, not independent confirmation of superiority.'}

@@ -385,13 +385,14 @@ def recommend(state, samples, context, space, origin, count=6, reservations=(),s
         if sac_gen is not None:
             predicted=row.get('sac_gen_prediction') or sac_gen.predict([row['recipe']])[0]
             row.update(sac_gen_prediction=predicted,p_xrd_pass=predicted['p_xrd_pass'],p_xrd_fail=predicted['p_xrd_fail'],
+                xrd_pass_threshold=predicted.get('xrd_pass_threshold',.5),predicted_xrd_state=predicted.get('predicted_xrd_state'),
                 predicted_total_wt_percent=predicted['predicted_total_wt_percent'],p_screen_pass=None,
-                model_id=sac_gen.model_id,model_info={'engine':'sac_gen','name':'SAC-Gen','loading_family':sac_gen.family},
+                model_id=sac_gen.model_id,model_info={'engine':'sac_gen','name':sac_gen.variant_name,'loading_family':sac_gen.family},
                 policy='SAC_GEN_XRD_ACTIVE_LEARNING',prediction_target='XRD_PASS',
                 evaluation_capture={'rule_version':RULE_VERSION,'training_batch_ids':sorted({s['batch_id'] for s in sac_gen.training_samples}),
                     'training_records':[{'sample_id':s['sample_id'],'record_uid':s.get('record_uid')} for s in sac_gen.training_samples]})
     if sac_gen is not None:
-        note='SAC-Gen predicts continuous ICP loading and trained XRD PASS/FAIL probability. Acquisition alternates XRD boundary exploration, predicted pass regions and recipe diversity. High-loading XRD FAIL experiments remain valid learning observations. No ICP pass probability or material-quality score is used. Probabilities require empirical calibration; unsupported conditions remain flagged.'
+        note=sac_gen.variant_name+' predicts continuous ICP loading and trained XRD/STEM structural-assessment probability. Acquisition alternates XRD boundary exploration, predicted pass regions and recipe diversity. High-loading XRD FAIL experiments remain valid learning observations. No ICP pass probability or material-quality score is used. Probabilities require empirical calibration; unsupported conditions remain flagged.'
     return rows, note
 
 
@@ -408,6 +409,7 @@ def recommendation_table(rows):
              "precursor_family": r["recipe"]["precursor_family"], "support_batch": r["recipe"]["support_batch"], "protocol_id": r["recipe"]["protocol_id"],
              "p_screen_pass": r["p_screen_pass"], "purpose": r["purpose"], "extrapolation": r["extrapolation"],
              'p_xrd_pass':r.get('p_xrd_pass'),'p_xrd_fail':r.get('p_xrd_fail'),
+             'xrd_pass_threshold':r.get('xrd_pass_threshold'),'predicted_xrd_state':r.get('predicted_xrd_state'),
              'predicted_total_wt_percent':r.get('predicted_total_wt_percent'),
              'p_screen_low': r.get('p_screen_low'), 'p_screen_high': r.get('p_screen_high'),
              'bald_bits': r.get('bald_bits'), 'model_disagreement': r.get('model_disagreement'),

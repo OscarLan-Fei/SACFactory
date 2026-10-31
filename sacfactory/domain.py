@@ -12,7 +12,7 @@ ELEMENTS = "H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe 
 ELEMENT_ORDER = TARGETS + [e for e in ELEMENTS if e not in TARGETS]
 HIGH_BASE = {"K", "Mg", "Ca", "Sr", "Ba"}
 RULE_VERSION = "screen-v1.4-material-outcomes"
-STATUS_NAMES = {"PASS": "Candidate screening passed", "ICP_FAIL": "ICP criterion failed", "XRD_FAIL": "XRD criterion failed", "BOTH_FAIL": "Both criteria failed", "BURNED_OUT": "Complete sample burnout", "PENDING": "Evidence pending", "RETEST": "Retest required"}
+STATUS_NAMES = {"PASS": "Candidate screening passed", "ICP_FAIL": "ICP criterion failed", "XRD_FAIL": "XRD/STEM structural assessment failed", "BOTH_FAIL": "Both criteria failed", "BURNED_OUT": "Complete sample burnout", "PENDING": "Evidence pending", "RETEST": "Retest required"}
 SAMPLE_CONDITIONS = {"NOT_RECORDED": "Not recorded", "RECOVERED": "Sample recovered", "PARTIAL_LOSS": "Partial material loss", "BURNED_OUT": "Completely burned out", "ACCIDENTAL_LOSS": "Lost during handling", "EQUIPMENT_ABORT": "Run aborted / device problem", "INSUFFICIENT_SAMPLE": "Insufficient sample for testing"}
 INVALID_RUN_CONDITIONS = {"ACCIDENTAL_LOSS", "EQUIPMENT_ABORT", "INSUFFICIENT_SAMPLE"}
 
@@ -156,6 +156,22 @@ def stem_confirmation(s):
     return state
 
 
+def structural_assessment(s):
+    """Unified recorded XRD/STEM judgment, retaining legacy storage fields.
+
+    A resolved primary judgment takes precedence. An unresolved legacy primary
+    field can use an explicitly entered STEM conclusion; no file is mandatory
+    for a direct user judgment. Inconclusive or unperformed tests stay pending.
+    """
+    evidence=s.get('xrd',{})
+    state=evidence.get('state','PENDING')
+    manual=evidence.get('mode')=='MANUAL'
+    if state in {'PASS','FAIL'} and (manual or all(evidence.get(k) for k in ('source','criteria','reviewer'))):
+        return state,'USER_REPORTED' if manual else 'REVIEWED_CRITERIA'
+    legacy=s.get('stem',{}).get('state','NOT_TESTED')
+    return {'CONFIRMED':'PASS','NOT_CONFIRMED':'FAIL'}.get(legacy,'PENDING'),'USER_REPORTED'
+
+
 def screen(s, methods):
     """Three-valued evidence logic. Missing evidence cannot become a PASS."""
     results, margins = [], []
@@ -203,11 +219,7 @@ def screen(s, methods):
         icp_state = reported_icp
         if reported_icp in {"PASS", "FAIL"} and numeric_icp in {"PASS", "FAIL"} and reported_icp != numeric_icp:
             conflicts.append("Reported ICP judgment conflicts with the numeric criterion result")
-    xrd = s.get("xrd", {})
-    xrd_state = xrd.get("state", "PENDING")
-    xrd_basis = "USER_REPORTED" if xrd.get("mode") == "MANUAL" else "REVIEWED_CRITERIA"
-    if xrd_basis != "USER_REPORTED" and xrd_state != "PENDING" and not all(xrd.get(k) for k in ("source", "criteria", "reviewer")):
-        xrd_state = "PENDING"
+    xrd_state, xrd_basis = structural_assessment(s)
     if icp_state == "FAIL" and xrd_state == "FAIL":
         status = "BOTH_FAIL"
     elif icp_state == "FAIL":

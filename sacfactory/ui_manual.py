@@ -4,7 +4,7 @@ import copy
 import pandas as pd
 import streamlit as st
 
-from .domain import ELEMENT_ORDER, parse_elements, screen, STATUS_NAMES, SAMPLE_CONDITIONS
+from .domain import ELEMENT_ORDER, parse_elements, screen, structural_assessment, STATUS_NAMES, SAMPLE_CONDITIONS
 from .manual import element_rows, apply_element_rows, save_manual_revisions, pending_samples, has_observations
 from .planning import fingerprint
 from .ui_chemistry import render_precursor_editor, chemistry_columns
@@ -95,12 +95,13 @@ def render_sample_editor(store, sample, methods, mode="records"):
                 icp_options.insert(0, "Keep numeric criterion")
                 existing = "Keep numeric criterion"
             icp = st.selectbox("Record ICP judgment", icp_options, index=icp_options.index(existing), key=prefix + "_icp")
-            xrd = st.selectbox("Record XRD judgment", ["PENDING", "PASS", "FAIL"], index=["PENDING", "PASS", "FAIL"].index(sample["xrd"].get("state", "PENDING")), key=prefix + "_xrd")
-            stem_options = ["NOT_TESTED", "CONFIRMED", "NOT_CONFIRMED", "INCONCLUSIVE"]
-            stem = st.selectbox("Record optional STEM", stem_options, index=stem_options.index(sample.get("stem", {}).get("state", "NOT_TESTED")), key=prefix + "_stem")
-            stem_source = st.text_input("Record STEM source (optional)", sample.get("stem", {}).get("source", ""), key=prefix + "_stem_source")
-            stem_reviewer = st.text_input("Record STEM reviewer (optional)", sample.get("stem", {}).get("reviewer", ""), key=prefix + "_stem_reviewer")
-            st.caption("Direct ICP/XRD judgments save without measurements or files. Corrections to a linked recipe retain its original proposal and explicitly record any deviation.")
+            xrd = st.selectbox("Record XRD/STEM judgment", ["PENDING", "PASS", "FAIL"], index=["PENDING", "PASS", "FAIL"].index(structural_assessment(sample)[0]), key=prefix + "_xrd")
+            with st.expander("Archived method-specific evidence (optional)"):
+                stem_options = ["NOT_TESTED", "CONFIRMED", "NOT_CONFIRMED", "INCONCLUSIVE"]
+                stem = st.selectbox("Record optional STEM", stem_options, index=stem_options.index(sample.get("stem", {}).get("state", "NOT_TESTED")), key=prefix + "_stem")
+                stem_source = st.text_input("Record STEM source (optional)", sample.get("stem", {}).get("source", ""), key=prefix + "_stem_source")
+                stem_reviewer = st.text_input("Record STEM reviewer (optional)", sample.get("stem", {}).get("reviewer", ""), key=prefix + "_stem_reviewer")
+            st.caption("Direct ICP/XRD/STEM judgments save without measurements or files. Corrections to a linked recipe retain its original proposal and explicitly record any deviation.")
         submitted = st.form_submit_button("Save pending changes" if pending else "Save experiment changes", type="primary")
     if submitted:
         try:
@@ -212,7 +213,7 @@ def render_pending(store, samples, methods):
         else:
             st.write('**SAC-Gen forecast for this recipe**')
             st.dataframe(pd.DataFrame([{'metric': label, 'value': str(current_forecast['sac_gen_prediction'].get(key, 'Unavailable'))}
-                for key,label in [('p_xrd_pass','XRD PASS probability'),('p_xrd_fail','XRD FAIL probability'),
+                for key,label in [('p_xrd_pass','XRD/STEM PASS probability'),('p_xrd_fail','XRD/STEM FAIL probability'),
                     ('predicted_total_wt_percent','Predicted total ICP / wt%'),('outside_training_support','Outside training support')]]),
                 hide_index=True,width='stretch')
     st.write('**Mixing descriptors for the saved pending recipe**')
@@ -287,7 +288,7 @@ def render_feedback(store, samples, methods):
         outcomes = st.data_editor(pd.DataFrame(rows), hide_index=True, width="stretch", disabled=["sample_id"],
             column_order=["sample_id", "sample_condition", "icp_state", "xrd_state", "stem_state", "batch_id", "pulse_count", "pulse_limit_C", "temperature_C", "voltage_V", "current_A", "notes"],
             column_config={"sample_condition": st.column_config.SelectboxColumn("Sample condition", options=list(SAMPLE_CONDITIONS)), "icp_state": st.column_config.SelectboxColumn("ICP judgment", options=["PENDING", "PASS", "FAIL", "Keep numeric criterion"]),
-                "xrd_state": st.column_config.SelectboxColumn("XRD judgment", options=["PENDING", "PASS", "FAIL"]),
+                "xrd_state": st.column_config.SelectboxColumn("XRD/STEM judgment", options=["PENDING", "PASS", "FAIL"]),
                 "stem_state": st.column_config.SelectboxColumn("Optional STEM", options=["NOT_TESTED", "CONFIRMED", "NOT_CONFIRMED", "INCONCLUSIVE"]),
                 "pulse_count": st.column_config.NumberColumn("Pulses", min_value=1, step=1),
                 "pulse_limit_C": st.column_config.NumberColumn("Controlled cutoff / C"),

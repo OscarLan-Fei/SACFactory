@@ -18,10 +18,11 @@ from .units import normalize_assay
 from .physical_priors import thermal_properties, thermal_reference
 from .outcome_validation import (BINARY_ENDPOINTS, outcome_labels, normalized_weights,
     fit_outcomes, binary_metrics, score_samples)
+from .validation_groups import RANDOM_RECIPE_CV, recipe_folds, assert_mask
 
 VERSION = 'weighted-validation-v5-sac-gen'
 ROTATING_CV = 'Rotating batch cross-validation'
-PROTOCOLS = [ROTATING_CV, 'Unseen element holdout', 'Batch holdout', 'New recipe holdout',
+PROTOCOLS = [RANDOM_RECIPE_CV, ROTATING_CV, 'Unseen element holdout', 'Batch holdout', 'New recipe holdout',
              'Chronological batch replay', 'Single to multiple elements']
 
 
@@ -127,7 +128,13 @@ def split_records(records, all_samples, origin, targets, protocol, budget, batch
     splits = []
     for key, rows in partitions.items():
         relevant = lambda r: bool(set(r['sample']['elements']) & set(targets))
-        if protocol == ROTATING_CV:
+        if protocol == RANDOM_RECIPE_CV:
+            for fold, (source, held) in enumerate(recipe_folds([r['sample'] for r in rows], budget, seed), 1):
+                train = [rows[i] for i in source]
+                test = [rows[i] for i in held if relevant(rows[i])]
+                if test:
+                    splits.append((train, test, f'{fingerprint(key)}_RECIPE_OOF_{fold}', targets))
+        elif protocol == ROTATING_CV:
             from .pulseicp_cross_validation import batch_groups
             batches = {str(r['sample']['batch_id']) for r in rows}
             if len(batches) < 3:
@@ -237,7 +244,7 @@ def weighted_validation(samples, methods, origin, targets, protocol='Unseen elem
         emit({'stage':'Outer validation fold','fold':fold_index+1,'folds':len(splits)})
         train_batches = {r['sample']['batch_id'] for r in train}
         test_batches = {r['sample']['batch_id'] for r in test}
-        assert not train_batches & test_batches
+        assert_mask([r['sample'] for r in train], [r['sample'] for r in test], protocol == RANDOM_RECIPE_CV)
         if len(train)<8 or len(train_batches)<2 or len({r['recipe'] for r in train})<3:
             skipped.append({'fold':fold,'reason':'Need 8 training records, 2 batches and 3 recipes'})
             continue
@@ -261,7 +268,9 @@ def weighted_validation(samples, methods, origin, targets, protocol='Unseen elem
         if sac_gen:
             from .sac_gen import SACGen
             try:
-                trained=SACGen(icp_family,icp_settings,profile).fit([r['sample'] for r in train],origin,methods)
+                settings = dict(icp_settings or bridge.configuration()['model'])
+                settings['crossfit_grouping'] = 'recipe' if protocol == RANDOM_RECIPE_CV else 'batch'
+                trained=SACGen(icp_family,settings,profile).fit([r['sample'] for r in train],origin,methods)
                 forecasts=trained.predict([r['sample'] for r in test])
                 probabilities=[f['p_xrd_pass'] for f in forecasts]
                 heads['xrd_pass']=(probabilities,trained.xrd_mean)
@@ -343,7 +352,7 @@ def weighted_validation(samples, methods, origin, targets, protocol='Unseen elem
                     'icp_baseline_loss':float(((baseline_w-w)/delta)**2) if icp_loss is not None else None, **binary,
                     'validation_loss':loss,'validation_score':display_score(loss) if full else None,'baseline_loss':baseline,
                     'endpoint_set':'ICP + screening' if full else 'ICP only' if icp_loss is not None else 'Screening only' if brier is not None else 'Unavailable',
-                    'prediction_kind':'BATCH_OUT_OF_FOLD' if protocol==ROTATING_CV else 'RETROSPECTIVE_HELD_OUT',
+                    'prediction_kind':'RECIPE_OUT_OF_FOLD' if protocol==RANDOM_RECIPE_CV else 'BATCH_OUT_OF_FOLD' if protocol==ROTATING_CV else 'RETROSPECTIVE_HELD_OUT',
                     'target_seen_before':e in {e2 for row in train for e2 in row['sample']['elements']}})
     frame=pd.DataFrame(points)
     sample_scores=score_samples(frame,score_weights,agreement_method) if len(frame) else pd.DataFrame()
@@ -401,6 +410,7 @@ def weighted_validation(samples, methods, origin, targets, protocol='Unseen elem
         'exclusions':dict(Counter(audit.loc[~audit.eligible,'reason'])) if len(audit) else {},
         'note':'Fixed outcome-specific random forests benchmark uncalibrated probabilities; the ICP head is selectable. All heads share whole-batch outer masks. Rotating mode tests every eligible sample once unless an explicit fitting/context gate prevents coverage; no fold-budget truncation is applied. Repeated recipes may remain in training batches. This is a separate retrospective validation engine, not the current Next batch predictor or saved prospective performance. Scores evaluate prediction agreement, not synthesis quality. One fixed normalized endpoint set is required for pooled scores. Missing endpoints are not zero; every selected ICP member must be paired. Binary losses count once per sample. Joint screening and component judgments are correlated; weighting both can double-count evidence. Selecting models/weights using these results requires a new independent final evaluation.'}
     if sac_gen:
-        info['note']='SAC-Gen learns mass-conserving ICP distributions and an L2 logistic XRD probability head. XRD features combine recipe chemistry, an elicited mechanistic prior and inner whole-batch out-of-fold ICP summaries. Outer test outcomes never enter either head. No ICP pass probability or material-utility score is used. Correct XRD FAIL forecasts earn high agreement scores. Probabilities are trained but uncalibrated. Fixed physical anchors are prior assumptions, not independently validated mechanisms. Model/weight selection using these development folds requires a new independent final evaluation.'
+        info['note']='SAC-Gen learns mass-conserving ICP distributions and an L2 logistic XRD probability head. XRD features combine recipe chemistry, an elicited mechanistic prior and inner group-held-out ICP summaries. Random recipe mode permits administrative batch overlap while keeping identical recipes and specimens separate. Outer test outcomes never enter either head. No ICP pass probability or material-utility score is used. Correct XRD FAIL forecasts earn high agreement scores. Probabilities are trained but uncalibrated. Fixed physical anchors are prior assumptions, not independently validated mechanisms. Model/weight selection using these development folds requires a new independent final evaluation.'
+    info['split_unit']='recipe' if protocol==RANDOM_RECIPE_CV else 'batch'
     emit({'stage':'Validation complete','completed':True,'folds':len(splits)})
     return frame,sample_scores,by_element,audit,info

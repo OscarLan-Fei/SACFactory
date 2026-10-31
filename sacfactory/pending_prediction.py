@@ -44,6 +44,7 @@ def refresh_pending_prediction(store, sample_id, expected):
              'support_batch','protocol_id','pan_mass_g','solvent_volume_mL','preparation_basis') if k in sample},
             'model_name':'SAC-Gen','model_id':deployed.model_id,'sac_gen_prediction':forecast,
             'p_xrd_pass':forecast['p_xrd_pass'],'p_xrd_fail':forecast['p_xrd_fail'],'p_screen_pass':None,
+            'xrd_pass_threshold':forecast.get('xrd_pass_threshold',.5),'predicted_xrd_state':forecast.get('predicted_xrd_state'),
             'icp_prediction':{'values':forecast['icp_predictions'],'basis':'HUMAN_ADJUSTED_PRE_SYNTHESIS_RECIPE'},
             'prediction_stale':False,'policy':'HUMAN_ADJUSTED_RECIPE','prediction_target':'XRD_PASS',
             'prediction_mode':'MODEL_FORECAST_AFTER_MANUAL_INTERVENTION',

@@ -94,11 +94,13 @@ def render_element_campaign(samples, methods, origin, store=None):
     st.dataframe(progress, hide_index=True, width='stretch')
     st.download_button('Download single-element campaign CSV', progress.to_csv(index=False).encode(), f'{origin.lower()}_single_element_campaign.csv', 'text/csv', key=f'element_progress_{origin}')
     singles = [s for s in samples if s.get('origin') == origin and len(s['elements']) == 1]
-    combined, individual = st.tabs(['All-element loading plot', 'Selected-element transfer'])
-    with combined:
-        render_combined_loading(samples, origin, singles)
-    with individual:
-        render_individual_transfer(samples, methods, origin, singles)
+    combined, individual = st.tabs(['All-element loading plot', 'Selected-element transfer'], key=f'campaign_views_{origin}', on_change='rerun')
+    if combined.open:
+        with combined:
+            render_combined_loading(samples, origin, singles)
+    if individual.open:
+        with individual:
+            render_individual_transfer(samples, methods, origin, singles)
 
 
 def render_individual_transfer(samples, methods, origin, singles):
