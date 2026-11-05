@@ -25,3 +25,18 @@ def preserve_analysis_controls(prefixes=ANALYSIS_CONTROL_PREFIXES):
             isinstance(value, (list, tuple)) and all(isinstance(item, scalar) for item in value)
         ):
             st.session_state[key] = value
+
+
+def refresh_data_epoch(session,origin,epoch):
+    """Invalidate derived views while retaining explicit chat permissions and run scope.
+
+    Committing characterization is a data refresh, not a new conversation. Run
+    authorization still checks namespace, selected IDs and stable record identities.
+    """
+    key='seen_data_epoch_'+origin
+    if session.get(key)==epoch:return
+    retained=('api_','seen_data_epoch_','record_action_','research_samples_',
+              'research_permission_','research_discussion_','chat_workflow_state_')
+    for candidate in list(session):
+        if origin in candidate and not candidate.startswith(retained):del session[candidate]
+    session[key]=epoch

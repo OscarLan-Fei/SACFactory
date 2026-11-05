@@ -66,15 +66,16 @@ def save_preview(store,samples,ledger,rows,key,model):
         st.session_state[key+'_committed']={'signature':preview_signature,'proposal_id':proposal['id'],'sample_ids':ids}
 
 
-def render_discovery(store,samples,methods,context):
+def render_discovery(store,samples,methods,context,embedded=False):
     from .ui_navigation import preserve_analysis_controls
     preserve_analysis_controls(('discovery_',))
-    st.title('SAC-Gen Discovery lab')
-    st.caption('Scientific knowledge, protected model updates and executable experimental decisions. ICP W is wt%; precursor amounts are mmol.')
+    if not embedded:
+        st.title('SAC-Gen Discovery lab')
+        st.caption('Scientific knowledge, protected model updates and executable experimental decisions. ICP W is wt%; precursor amounts are mmol.')
     ledger=CampaignLedger(store.root,store.origin)
     prediction,cycle,knowledge,selection,training,inverse,hypothesis,characterization,validation=st.tabs(
         ['Predict','Evolution','Knowledge','Model disagreement','Set model & updates','Inverse design','Hypotheses','Characterization','Validation'],
-        default='Evolution' if samples else 'Predict',key='discovery_tabs_'+store.origin,on_change='rerun')
+        default=st.session_state.get('discovery_tabs_'+store.origin,'Evolution' if samples else 'Predict'),key='discovery_tabs_'+store.origin,on_change='rerun')
     try:
         if prediction.open:
             with prediction:
@@ -148,9 +149,9 @@ def render_discovery(store,samples,methods,context):
                     with st.spinner('Training and checking saved-model forecasts...'),execution({'device':'auto','threads':4,'cpu_jobs':4}):
                         item=train_candidate(store.root,samples,store.origin,family,int(epochs))
                     ledger.add('training',{'origin':store.origin,'candidate':item});st.success('Verified candidate: '+item['model_id'])
-                    st.json(item)
+                    st.dataframe(pd.DataFrame([{'Model':item['name'],'Model ID':item['model_id'],'Created':item['created']}]),hide_index=True,width='stretch')
                 previous=ledger.records('training')
-                if previous:st.dataframe(pd.DataFrame([r['candidate'] for r in previous]),hide_index=True,width='stretch')
+                if previous:st.dataframe(pd.DataFrame([{**r['candidate'],'Workflow run':r.get('workflow_run_id','Single-step tool')} for r in previous]),hide_index=True,width='stretch')
         if inverse.open:
             with inverse:
                 from .discovery.inverse import candidates,rank
@@ -250,6 +251,11 @@ def render_discovery(store,samples,methods,context):
                 if reports:
                     chosen=st.selectbox('Saved evaluation',[r['id'] for r in reports],key='discovery_saved_evaluation_'+store.origin)
                     report=next(r for r in reports if r['id']==chosen);result=report['result']
+                    if report.get('workflow_run_id'):
+                        if st.button('Inspect originating workflow run',key='discovery_validation_run_link_'+store.origin):
+                            st.session_state['workflow_'+store.origin+'_graph_scope']='Run'
+                            st.session_state['workflow_'+store.origin+'_board_run_selection']=report['workflow_run_id']
+                            st.session_state['workflow_board_tab_jump']={'origin':store.origin,'tab':'Live board'};st.rerun()
                     frame=pd.DataFrame(result.get('metrics',result.get('curves',[])))
                     st.dataframe(frame,hide_index=True,width='stretch')
                     if 'curves' in result and len(frame):st.line_chart(frame.pivot(index='observations',columns='policy',values='ICP_MAE_wt_percent'))

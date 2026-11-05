@@ -33,12 +33,12 @@ def refresh_pending_prediction(store, sample_id, expected):
         raise ValueError('Only an unmeasured pending sample can receive a new pre-result prediction.')
     if sample.get('pulse_limit_C') is None:
         raise ValueError('Enter a controlled cutoff before predicting a pending recipe.')
-    from .sac_gen import latest as latest_sac_gen
-    deployed=latest_sac_gen(store.root,store.origin,samples)
+    from .planning_models import selected as selected_planning_model, prepare_context
+    deployed=selected_planning_model(store,samples)
     if deployed is not None:
         if sample_id in deployed.training_ids:
             raise ValueError('This pending sample belongs to the SAC-Gen training snapshot. Retrain without it before reserving a pre-result forecast.')
-        forecast=deployed.predict([sample])[0]
+        forecast=deployed.predict([prepare_context(sample,deployed)])[0]
         prediction={'created':now(),'origin':store.origin,'recipe':{k:copy.deepcopy(sample.get(k)) for k in
             ('origin','elements','concentrations_mM','pulse_count','pulse_limit_C','precursor_family','precursors',
              'support_batch','protocol_id','pan_mass_g','solvent_volume_mL','preparation_basis') if k in sample},
@@ -48,7 +48,9 @@ def refresh_pending_prediction(store, sample_id, expected):
             'icp_prediction':{'values':forecast['icp_predictions'],'basis':'HUMAN_ADJUSTED_PRE_SYNTHESIS_RECIPE'},
             'prediction_stale':False,'policy':'HUMAN_ADJUSTED_RECIPE','prediction_target':'XRD_PASS',
             'prediction_mode':'MODEL_FORECAST_AFTER_MANUAL_INTERVENTION',
-            'evaluation_capture':{'rule_version':RULE_VERSION,'training_batch_ids':sorted({s['batch_id'] for s in deployed.training_samples}),
+            'evaluation_capture':{'rule_version':RULE_VERSION,
+                'training_membership_status':'NOT_RELEASED' if getattr(deployed,'is_public_release',False) else 'LOCAL_TRAINING_IDENTITY',
+                'training_batch_ids':sorted({s['batch_id'] for s in deployed.training_samples}),
                 'training_records':[{'sample_id':s['sample_id'],'record_uid':s.get('record_uid')} for s in deployed.training_samples],
                 'dataset_snapshot':snapshot},
             'note':'Trained SAC-Gen loading and XRD forecasts. ICP pass probability and material-quality penalties are not used.'}

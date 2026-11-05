@@ -166,7 +166,7 @@ def validate_space(space, origin):
         raise ValueError("Concentration bounds must be finite and positive, with lower bound no greater than upper bound.")
     if not pulses or any(int(n) != n or n < 1 for n in pulses):
         raise ValueError("Candidate pulse counts must be positive integers.")
-    if origin == "REAL" and not space.get("verified"):
+    if origin == "REAL" and not space.get("verified") and space.get('range_basis') != 'PROPOSED_SEARCH':
         raise ValueError("Register the device-validated operating range in recommendation settings first.")
     max_total = float(space.get("max_total_mM", 1000))
     if not math.isfinite(max_total) or max_total <= 0:
@@ -238,6 +238,9 @@ def concentration_design(space, context):
 
 
 def recommend(state, samples, context, space, origin, count=6, reservations=(),sac_gen=None):
+    if sac_gen is not None:
+        from .planning_models import prepare_context
+        context = prepare_context(context, sac_gen)
     from .element_campaign import enforce_campaign
     enforce_campaign(context, space)
     if sac_gen is None and state.info.get('engine') in {'adaptive', 'reliability'} and state.model is not None:
@@ -290,6 +293,12 @@ def recommend(state, samples, context, space, origin, count=6, reservations=(),s
                 r = {**synthesis_context, "concentrations_mM": concentrations, "pulse_count": pulse, "pulse_limit_C": temperature}
                 if sum(r["concentrations_mM"].values()) <= max_total + 1e-9 and recipe_key(r) not in existing | reserved:
                     candidates.append(r)
+    # Bound pretrained forward-model work while retaining a spread of the saved grid.
+    if sac_gen is not None and getattr(sac_gen, 'is_public_release', False):
+        budget = max(count, min(1024, int(space.get('sac_gen_candidate_budget', 256))))
+        if len(candidates) > budget:
+            indices = np.unique(np.linspace(0, len(candidates)-1, budget, dtype=int))
+            candidates = [candidates[i] for i in indices]
     selected = []
     if candidates:
         x = np.array([encode(r) for r in candidates])
@@ -387,9 +396,13 @@ def recommend(state, samples, context, space, origin, count=6, reservations=(),s
             row.update(sac_gen_prediction=predicted,p_xrd_pass=predicted['p_xrd_pass'],p_xrd_fail=predicted['p_xrd_fail'],
                 xrd_pass_threshold=predicted.get('xrd_pass_threshold',.5),predicted_xrd_state=predicted.get('predicted_xrd_state'),
                 predicted_total_wt_percent=predicted['predicted_total_wt_percent'],p_screen_pass=None,
-                model_id=sac_gen.model_id,model_info={'engine':'sac_gen','name':sac_gen.variant_name,'loading_family':sac_gen.family},
+                extrapolation=bool(predicted.get('outside_training_support', row['extrapolation'])),
+                model_id=sac_gen.model_id,model_info={'engine':'sac_gen','name':sac_gen.variant_name,'loading_family':sac_gen.family,
+                    'source':'PRETRAINED_RELEASE' if getattr(sac_gen,'is_public_release',False) else 'LOCAL_CHECKPOINT'},
                 policy='SAC_GEN_XRD_ACTIVE_LEARNING',prediction_target='XRD_PASS',
-                evaluation_capture={'rule_version':RULE_VERSION,'training_batch_ids':sorted({s['batch_id'] for s in sac_gen.training_samples}),
+                evaluation_capture={'rule_version':RULE_VERSION,
+                    'training_membership_status':'NOT_RELEASED' if getattr(sac_gen,'is_public_release',False) else 'LOCAL_TRAINING_IDENTITY',
+                    'training_batch_ids':sorted({s['batch_id'] for s in sac_gen.training_samples}),
                     'training_records':[{'sample_id':s['sample_id'],'record_uid':s.get('record_uid')} for s in sac_gen.training_samples]})
     if sac_gen is not None:
         note=sac_gen.variant_name+' predicts continuous ICP loading and trained XRD/STEM structural-assessment probability. Acquisition alternates XRD boundary exploration, predicted pass regions and recipe diversity. High-loading XRD FAIL experiments remain valid learning observations. No ICP pass probability or material-quality score is used. Probabilities require empirical calibration; unsupported conditions remain flagged.'
