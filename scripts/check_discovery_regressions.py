@@ -14,10 +14,11 @@ def main():
     parser=argparse.ArgumentParser();parser.add_argument('--output',type=Path,required=True)
     args=parser.parse_args();out=args.output.resolve();out.mkdir(parents=True,exist_ok=True)
     os.chdir(APP)
-    patterns=['test_discovery.py','test_discovery_ui.py','test_characterization.py','test_research_chat.py',
+    patterns=['test_workflow_coordination.py','test_chat_workflows.py','test_workflow_templates.py','test_device_catalog.py','test_workflow_board.py','test_workflows.py','test_discovery.py','test_discovery_ui.py','test_characterization.py','test_research_chat.py',
               'test_pending.py','test_pending_prediction.py','test_manual.py',
               'test_sac_gen_workflow.py','test_information_controls.py',
-              'test_analysis_navigation.py','test_concentrations.py']
+              'test_analysis_navigation.py','test_concentrations.py','test_pretrained.py','test_public_context_ui.py','test_validation_public_ui.py']
+    patterns.insert(0,'test_confirmed_workflow.py')
     suite=unittest.TestSuite()
     for pattern in patterns:suite.addTests(unittest.TestLoader().discover(str(APP/'tests'),pattern=pattern))
     with (out/'regression_tests.log').open('w',encoding='utf-8') as log:
