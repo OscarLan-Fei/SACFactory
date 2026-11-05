@@ -22,7 +22,15 @@ These are inference parameters learned from experiments, not a dataset release.
 
 ## Use
 
-Start SACFactory, select **Real experiments**, then **Discovery lab → Predict**.
+Start SACFactory, select **Real experiments → Next batch** and choose either
+**Pretrained SAC-Gen-GB** or **Pretrained SAC-Gen-Diffusion**. Review the search
+bounds and objective, generate a preview, then add the group to Pending.
+The empty workspace supplies editable Fe/PAN/DMF proposal settings. These bounds
+are not measured device-validation evidence. Switching models invalidates an
+unreserved preview. Edited pending recipes can be reforecast with the selected
+model, preserving the original forecast and the manual intervention history.
+
+For one recipe, open **Discovery & Workflows → Scientific tools → Predict**.
 Choose a pretrained variant, elements, precursor amounts in mmol, PAN mass, DMF
 volume, controlled cutoff and pulse count. Click **Predict recipe**. Predictions
 are not saved as measured experiments. GB provides deterministic point forecasts;
