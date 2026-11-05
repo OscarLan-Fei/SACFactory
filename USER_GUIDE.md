@@ -11,7 +11,8 @@ evaluation, deployment training and new experiments. See
 **Simulated demo · DEMO** holds the synthetic campaign. Records and models remain
 separate. A DEMO model is a demonstration model, not a model validated on your
 experiments. Original private training checkpoints are not included. The public
-inference-only SAC-Gen release is available under **Discovery lab → Predict**
+inference-only SAC-Gen release is available under **Next batch** and
+**Discovery & Workflows → Scientific tools → Predict**
 in REAL without importing any experimental records or training a new model.
 
 ## Workspace reference
@@ -77,10 +78,24 @@ values remain missing rather than being guessed.
 1. Choose target elements and process context.
 2. Set allowed concentrations, pulses, cutoff temperatures and preparation basis.
    Equal lower/upper bounds fix a variable.
-3. If a current SAC-Gen deployment checkpoint exists, enable it for prediction;
-   otherwise inspect the available planner and any design-only status.
+3. Select **Pretrained SAC-Gen-GB** or **Pretrained SAC-Gen-Diffusion** to use the
+   included learned parameters immediately. Local checkpoint options are also
+   available when installed. Existing local deployments remain the default in
+   an established workspace; a new installation defaults to pretrained GB.
 4. Set the acquisition objective and requested size; generate and review a preview.
 5. Use **Add batch to pending** to preserve proposals before testing.
+
+A new REAL workspace starts with Fe at a 50 mM reference (1 mmol in 20 mL),
+2 g PAN, and editable proposed bounds of 10–120 mM, 800–1400 C and 1/2/4 pulses.
+These are search settings, not validated device limits. Device-validation
+evidence can be recorded separately. Changing a model clears an unreserved
+preview; regenerate it to obtain forecasts from the selected model. The selected
+learner is also used when refreshing an edited pending recipe. Public releases
+keep support unverified because exact private training membership is withheld.
+
+Public-model candidate evaluation uses a bounded, deterministic subset of the
+saved recipe grid (256 candidates by default), retaining the requested number
+of distinct proposals when the allowed space contains enough unused recipes.
 
 Requested size is subject to candidate ranges, deduplication and reservations.
 One eligible recipe can produce one proposal even with a larger requested size.
@@ -90,6 +105,16 @@ Validation and deployment are separate fits. Edited source records can invalidat
 a checkpoint fingerprint; retrain before using updated data. Edited pending
 controls require a refreshed prediction. Preserve the forecast made before
 outcomes were recorded so it can be compared with the later experiment.
+
+### Discovery & Workflows
+
+Use **Scientific tools** for individual predictions, inverse design, knowledge,
+characterization and protected evaluation. **Workflow library**, **Runs**,
+**Live board** and **Devices** share persistent task definitions and returns
+with Experiment chat. See [Devices and workflows](DEVICES_AND_WORKFLOWS.md),
+[Workflow templates](WORKFLOW_TEMPLATES.md) and the
+[reviewed synthesis loop](CONFIRMED_SYNTHESIS_WORKFLOWS.md). Pending proposals
+from Next batch do not automatically dispatch instruments.
 
 ### Data analysis
 

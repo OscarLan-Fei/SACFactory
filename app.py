@@ -79,13 +79,17 @@ div[class*="st-key-periodic_grid_"] [data-testid="stHorizontalBlock"] {gap:2px !
 
 if st.session_state.get("page") == "Analytical methods":
     st.session_state["page"] = "Data analysis"
+if st.session_state.get('page') in {'Discovery lab','Devices & Workflows'}:
+    if st.session_state['page']=='Discovery lab':
+        st.session_state['workflow_board_tab_jump']={'origin':'DEMO' if 'DEMO' in st.session_state.get('mode','') else 'REAL','tab':'Scientific tools'}
+    st.session_state['page']='Discovery & Workflows'
 
 with st.sidebar:
     st.markdown("## ⚛ SACFactory")
     st.caption("INTELLIGENT SYNTHESIS WORKBENCH")
     origin_label = st.radio("Data space", ["Real experiments · REAL", "Simulated demo · DEMO"], key="mode")
     origin = "REAL" if "REAL" in origin_label else "DEMO"
-    page = st.radio("Workspace", ["Experiment chat", "Samples & data", "Materials & consumables", "Next batch", "Discovery lab", "Data analysis", "Language model", "About"], key="page")
+    page = st.radio("Workspace", ["Experiment chat", "Samples & data", "Materials & consumables", "Next batch", "Discovery & Workflows", "Data analysis", "Language model", "About"], key="page")
     st.divider()
     api_active = bool(st.session_state.get("api_config") and st.session_state.get(f"api_permission_{origin}", False))
     research_mode = st.session_state.get('assistant_mode_setting', 'Task interpretation') == 'Research conversation'
@@ -96,12 +100,9 @@ store = Store(os.environ.get("SACFACTORY_DATA_DIR", str(ROOT / "data")), origin)
 seed(store, ROOT)
 register_defaults(store)
 epoch = (store.get("meta", "data-epoch") or {}).get("value", "initial")
-epoch_key = f"seen_data_epoch_{origin}"
-if st.session_state.get(epoch_key) != epoch:
-    for key in list(st.session_state):
-        if origin in key and not key.startswith(("api_", "seen_data_epoch_", "record_action_")):
-            del st.session_state[key]
-    st.session_state[epoch_key] = epoch
+from sacfactory.ui_navigation import preserve_analysis_controls,refresh_data_epoch
+refresh_data_epoch(st.session_state,origin,epoch)
+preserve_analysis_controls(('research_','share_batches_'))
 samples = store.all("sample")
 methods = {m["method_id"]: m for m in store.all("method")}
 reservations = store.all("recommendation")
@@ -115,6 +116,10 @@ else:
     context = {"sample_id": "EMPTY_CONTEXT", "origin": origin, "elements": list(TARGETS),
         "concentrations_mM": recipe(TARGETS), "pulse_count": 1, "temperature_C": None, "pulse_limit_C": None,
         "precursor_family": "UNKNOWN", "support_batch": "UNKNOWN", "protocol_id": "UNKNOWN", "icp": []}
+fresh_pretrained_plan = page == 'Next batch' and origin == 'REAL' and not samples and not context_record
+if fresh_pretrained_plan:
+    from sacfactory.planning_models import initial_context
+    context = initial_context()
 context = {**context, 'precursors': planning_precursors(store, context, context['elements'])}
 space_record = store.get("meta", "space")
 from sacfactory.element_campaign import campaign_training_samples
@@ -122,6 +127,9 @@ campaign_policy = store.get('meta', 'element_campaign') or {}
 campaign_enabled = bool(campaign_policy.get('enabled'))
 space = restore_planning_space(space_record['space'] if space_record else None,
     context, samples, methods, origin, campaign_policy)
+if fresh_pretrained_plan and not space_record:
+    from sacfactory.planning_models import initial_space
+    space.update(initial_space())
 if campaign_enabled:
     covered = space['_single_element_campaign']['covered']
 
@@ -155,15 +163,21 @@ active_sac_path=store.root/'sac_gen'/origin.lower()/'latest.json'
 if active_sac_path.exists():
     try:active_sac_pointer=json.loads(active_sac_path.read_text())
     except (ValueError,OSError):pass
-if page=='Next batch' and active_sac_pointer and st.session_state.get(f'next_sac_gen_{origin}',True):
+from sacfactory.planning_models import options as planning_model_options, selection as planning_model_selection
+planning_models = planning_model_options(store.root, origin) if page == 'Next batch' else {}
+saved_planning_model = store.get('meta', 'planning_model') or {}
+planning_choice = planning_model_selection(store.root, origin,
+    st.session_state.get(f'next_sac_variant_{origin}', saved_planning_model.get('selection'))) if planning_models else None
+planning_entry = planning_models.get(planning_choice, {})
+if page=='Next batch' and planning_entry and st.session_state.get(f'next_sac_gen_{origin}',saved_planning_model.get('enabled',True)):
     active_key=f'planning_sac_gen_model_{origin}'
-    if st.session_state.get(active_key)!=active_sac_pointer['model_id']:
+    if st.session_state.get(active_key)!=planning_entry['model_id']:
         st.session_state.pop(f'preview_{origin}',None)
         st.session_state.pop(f'plan_note_{origin}',None)
-        st.session_state[active_key]=active_sac_pointer['model_id']
-    state=ModelState(None,{'engine':'sac_gen','mode':'SAC_GEN_DEPLOYMENT','model_id':active_sac_pointer['model_id'],
-        'n_labeled':active_sac_pointer.get('training_samples',0),'n_batches':len({s.get('batch_id') for s in samples}),
-        'reason':'Trained SAC-Gen checkpoint available. XRD/STEM probability and continuous ICP forecasts are evaluated when generating a batch. Training-record changes require retraining.'},[])
+        st.session_state[active_key]=planning_entry['model_id']
+    state=ModelState(None,{'engine':'sac_gen','mode':'SAC_GEN_DEPLOYMENT','model_id':planning_entry['model_id'],
+        'n_labeled':planning_entry.get('training_samples',0),'n_batches':len({s.get('batch_id') for s in samples}),
+        'reason':planning_choice+' is ready for recipe forecasts. No training is started. Review the saved operating range before running experiments.'},[])
     st.session_state[f'planning_state_{origin}']=(planning_signature,state)
 elif page=='Next batch':
     state = train_cached(json.dumps(payload, ensure_ascii=False, sort_keys=True))
@@ -181,14 +195,14 @@ if preview:
     reserved_ids = {r['recommendation_id'] for r in reservations}
     if not all(r['recommendation_id'] in reserved_ids for r in preview) and any(
             r.get('snapshot') != signature or (not state.info.get('deferred') and r.get('model_id') !=
-                (active_sac_pointer.get('model_id') if r.get('policy')=='SAC_GEN_XRD_ACTIVE_LEARNING' else state.info.get('model_id','NO_MODEL'))) for r in preview):
+                state.info.get('model_id','NO_MODEL')) for r in preview):
         st.session_state.pop(f'preview_{origin}', None)
         st.session_state.pop(f'plan_note_{origin}', None)
         st.session_state[f'preview_refresh_notice_{origin}'] = 'Earlier unreserved preview cleared because data, chemistry, settings or model version changed. Generate a new preview with the current model.'
 stats = summary(samples, methods)
 failed = sum(stats["counts"].get(k, 0) for k in ("ICP_FAIL", "XRD_FAIL", "BOTH_FAIL", "BURNED_OUT"))
 pending = stats["counts"].get("PENDING", 0) + stats["counts"].get("RETEST", 0)
-compact_page = page in {'Next batch', 'Materials & consumables'}
+compact_page = page in {'Next batch', 'Materials & consumables','Discovery & Workflows'}
 if compact_page:
     st.caption(f"SACFactory · {origin} · {stats['total']} recorded samples")
 summary_container = st.expander('Workspace summary and screening criteria') if compact_page else st.container()
@@ -198,7 +212,9 @@ with summary_container:
     for c, label, value in ((c1, "Samples", stats["total"]), (c2, "Screen pass", stats["counts"].get("PASS", 0)), (c3, "Screen fail", failed), (c4, "Evidence pending", pending)):
         c.metric(label, value)
     st.markdown('<div class="note">Candidate screening uses ICP PASS + XRD/STEM PASS. Record complete burnout separately as a synthesis failure; handling/device exceptions require retesting. Unperformed tests remain pending. Structural judgments may use XRD or STEM. Screening does not independently establish atomic dispersion.</div>', unsafe_allow_html=True)
-if origin == "DEMO":
+if origin == "DEMO" and page=='Discovery & Workflows':
+    st.caption('DEMO workspace · Device jobs, measurements and feedback are explicitly simulated.')
+elif origin == "DEMO":
     st.warning("DEMO contains explicitly simulated synthesis outcomes, optional content readings and saved forward predictions. Assumed response functions illustrate the workflow, not experimental performance. DEMO data and training are isolated from REAL.")
 
 
@@ -335,6 +351,18 @@ if page == "Experiment chat":
                 from uuid import uuid4
                 st.session_state[f'research_discussion_{origin}'] = uuid4().hex
                 st.success('New research discussion started. Earlier chat remains in local history but is excluded from the new API context.')
+    from sacfactory.workflow_chat import scoped_state
+    from sacfactory.ui_chat_workflows import render_current_workflow,render_workflow_result,workflow_message
+    workflow_selection=st.session_state.get(f'research_samples_{origin}',[]) if research_mode else [s['sample_id'] for s in samples]
+    workflow_state_key='chat_workflow_state_'+origin
+    workflow_state=scoped_state(st.session_state.get(workflow_state_key),origin,workflow_selection,st.session_state.get(f'research_discussion_{origin}','initial'))
+    if workflow_state is not st.session_state.get(workflow_state_key):st.session_state.pop('workflow_chat_preview_'+origin,None)
+    st.session_state[workflow_state_key]=workflow_state
+    from sacfactory.ui_chat_workflows import apply_conversation_request
+    if st.session_state.get('workflow_conversation_request'):
+        from sacfactory.workflow_service import WorkflowService
+        try:apply_conversation_request(st.session_state,WorkflowService(store,context,workflow_selection),workflow_state)
+        except (ValueError,KeyError,TypeError,RuntimeError) as exc:st.warning(str(exc))
     with left:
         st.subheader('Research conversation' if research_mode else 'Experiment assistant')
         if st.button('Clear chat history', key=f'clear_chat_{origin}'):
@@ -346,6 +374,7 @@ if page == "Experiment chat":
         if research_ready:
             shared_count = len(st.session_state.get(f'research_samples_{origin}', []))
             st.caption(f'{origin} · {shared_count} selected records · Research conversation and local calculations enabled')
+            st.caption('Requested workflows can save proposals, train versioned candidates and use reviewed feedback. Track execution under Discovery & Workflows. Simulated acquisition is DEMO-only.')
         elif research_mode:
             st.info('Configure the provider and enable API/data sharing on Language model to discuss your experiments. Local shortcuts remain available.')
         else:
@@ -369,6 +398,9 @@ if page == "Experiment chat":
         for col, label, prompt in ((quick[0], "Summary", "Summarize experimental results"), (quick[1], "Check evidence", "Check missing evidence"), (quick[2], "Next batch", "Recommend 6 experiments")):
             if col.button(label, width="stretch"):
                 question = prompt
+        flow_quick=st.columns(3)
+        for col,label,prompt in [(flow_quick[0],'Workflow templates','/workflow templates'),(flow_quick[1],'Preparation template','/workflow preview precursor_preparation'),(flow_quick[2],'Workflow status','/workflow status')]:
+            if col.button(label,width='stretch'):question=prompt
         chat = st.container(height=520, border=True)
         with chat:
             messages = store.messages(30)
@@ -377,6 +409,8 @@ if page == "Experiment chat":
             for message in messages:
                 with st.chat_message(message["role"], avatar="⚛" if message["role"] == "assistant" else None):
                     st.markdown(message["content"])
+                    if message['payload'].get('language',{}).get('workflow_result'):
+                        render_workflow_result(message['payload']['language']['workflow_result'])
                     if message["payload"].get("numbering_note"):
                         st.caption(message["payload"]["numbering_note"])
                     research = message['payload'].get('language', {})
@@ -397,7 +431,8 @@ if page == "Experiment chat":
                         st.caption(" · ".join(details) + " · Results calculated locally")
                     if message["payload"].get("table"):
                         st.dataframe(display_history_table(message["payload"]["table"])[["concentration_mM", "pulse_count", "p_screen_pass", "purpose"]], hide_index=True, width="stretch")
-        typed = st.chat_input("Ask about failures, compare batches, or discuss the next synthesis" if research_mode else "Try: Diagnose SAC_0001; Recommend 6 experiments", key="experiment_chat") or research_prompt
+        render_current_workflow(store,workflow_state)
+        typed = st.chat_input("Discuss experiments, choose a workflow template, or modify its settings and devices" if research_mode else "Try: /workflow templates; /workflow preview precursor_preparation", key="experiment_chat") or research_prompt
         question = typed or question
         if question:
             config = st.session_state.get("api_config")
@@ -406,11 +441,23 @@ if page == "Experiment chat":
             if any(key in question for key in known_keys):
                 st.error("Do not put the API key in chat. Use the password field on Language model. This request was not saved or sent.")
             else:
-                if state.info.get('deferred'):
+                from sacfactory.workflow_service import WorkflowService
+                from sacfactory.workflow_chat import WorkflowChat,local_chat_workflow
+                workflow_selection=st.session_state.get(f'research_samples_{origin}',[]) if research_mode else [s['sample_id'] for s in samples]
+                workflow_service=WorkflowService(store,context,workflow_selection)
+                workflow_controller=WorkflowChat(workflow_service,workflow_state)
+                local_workflow=None
+                if question.strip().lower().startswith('/workflow'):
+                    try:local_workflow=local_chat_workflow(question,workflow_controller)
+                    except (ValueError,KeyError,TypeError,RuntimeError,OSError) as exc:local_workflow={'error':str(exc)}
+                if local_workflow is None and state.info.get('deferred') and not (typed and api_active and research_mode):
                     state=train_cached(json.dumps(payload,ensure_ascii=False,sort_keys=True))
                     st.session_state[f'planning_state_{origin}']=(planning_signature,state)
                 language_record = {"mode": "LOCAL"}
-                if typed and api_active and research_mode:
+                if local_workflow is not None:
+                    answer=Answer(workflow_message(local_workflow),[],[])
+                    language_record={'mode':'LOCAL_WORKFLOW','workflow_result':local_workflow}
+                elif typed and api_active and research_mode:
                     selected_ids = st.session_state.get(f'research_samples_{origin}', [])
                     scope = fingerprint({'base': config.base_url, 'model': config.model, 'api_format': config.api_format, 'origin': origin, 'selection': sorted(selected_ids), 'discussion': st.session_state.get(f'research_discussion_{origin}', 'initial')})
                     history = [m for m in messages if m['payload'].get('language', {}).get('mode') == 'API_RESEARCH' and m['payload']['language'].get('scope') == scope]
@@ -419,13 +466,15 @@ if page == "Experiment chat":
                         if not enabled:
                             raise LanguageError('Enable research-chat data and conversation sharing on Language model before sending a free-form discussion.')
                         shared = research_context(samples, methods, state, context, space, origin, selected_ids)
-                        tools = ResearchTools(samples, methods, state, context, space, origin, selected_ids, reservations)
+                        tools = ResearchTools(samples, methods, state, context, space, origin, selected_ids, reservations,workflow_service=workflow_service,
+                                              workflow_state=workflow_state,planner_loader=lambda:train_cached(json.dumps(payload,ensure_ascii=False,sort_keys=True)))
                         with st.spinner('Discussing results and running requested local calculations...'):
-                            result = ResearchAdapter(config, enabled=True, max_output_tokens=st.session_state.get('research_token_budget', 3000)).converse(question, history, shared, tools)
+                            result = ResearchAdapter(config, enabled=True, max_calls=6,max_output_tokens=st.session_state.get('research_token_budget', 3000)).converse(question, history, shared, tools)
+                        state=tools.state
                         answer = result.answer
                         language_record = {'mode': 'API_RESEARCH', 'scope': scope, 'model': config.model, 'usage': result.usage, 'api_calls': result.api_calls, 'tools': result.trace}
                     except LanguageError as exc:
-                        answer = Answer(str(exc) + '\n\nLocal shortcuts remain available. No experiment was reserved.', [], [])
+                        answer = Answer(str(exc) + '\n\nLocal shortcuts remain available. Check Discovery & Workflows for any saved run.', [], [])
                         language_record = {'mode': 'API_ERROR'}
                 elif typed and api_active:
                     shared = shared_context(samples, methods, state, context, space, origin)
@@ -558,31 +607,36 @@ elif page == "Next batch":
     if state.model is None:
         st.info(state.info["reason"])
     count = st.number_input("Maximum experiments in the next batch", min_value=1, max_value=12, value=6, step=1)
-    sac_gen_exists=(store.root/'sac_gen'/origin.lower()/'latest.json').exists()
-    use_sac_gen=st.checkbox('Use trained SAC-Gen for XRD/STEM acquisition and ICP forecasts',value=sac_gen_exists,
-        disabled=not sac_gen_exists,key=f'next_sac_gen_{origin}')
-    variant_registry=store.root/'sac_gen'/origin.lower()/'variants.json'
-    if use_sac_gen and variant_registry.exists():
-        registry=json.loads(variant_registry.read_text())
-        variants=list(registry.get('variants',{}))
-        selected=active_sac_pointer.get('name',registry.get('default','SAC-Gen-Diffusion'))
+    sac_gen_exists=bool(planning_models)
+    def change_planning_engine():
+        store.put_many('meta',[{'id':'planning_model','origin':origin,'selection':planning_choice,
+            'enabled':st.session_state[f'next_sac_gen_{origin}']}],'id',overwrite=True)
+        st.session_state.pop(f'preview_{origin}',None)
+        st.session_state.pop(f'plan_note_{origin}',None)
+    use_sac_gen=st.checkbox('Use trained SAC-Gen for XRD/STEM acquisition and ICP forecasts',
+        value=sac_gen_exists and saved_planning_model.get('enabled',True),
+        disabled=not sac_gen_exists,key=f'next_sac_gen_{origin}',on_change=change_planning_engine)
+    if use_sac_gen:
+        variants=list(planning_models)
+        selected=planning_choice
         variant_key=f'next_sac_variant_{origin}'
         if selected in variants and st.session_state.get(variant_key)!=selected:
             st.session_state[variant_key]=selected
         def change_saved_variant():
-            from sacfactory.sac_gen import activate_variant
-            try:
-                activate_variant(store.root,origin,st.session_state[variant_key],store.all('sample'))
-                st.session_state.pop(f'preview_{origin}',None)
-                st.session_state.pop(f'plan_note_{origin}',None)
-            except (ValueError,KeyError,OSError) as exc:
-                st.session_state[f'variant_error_{origin}']=str(exc)
+            store.put_many('meta',[{'id':'planning_model','origin':origin,
+                'selection':st.session_state[variant_key],'enabled':True}],'id',overwrite=True)
+            st.session_state.pop(f'preview_{origin}',None)
+            st.session_state.pop(f'plan_note_{origin}',None)
         st.selectbox('SAC-Gen prediction model',variants,key=variant_key,on_change=change_saved_variant,
-            help='Load a saved learner variant for Next batch and pending reforecasts. No retraining is started.')
+            help='Pretrained models work immediately without experimental records. Local models use your own verified checkpoint. The selection also applies to pending reforecasts.')
         if st.session_state.get(f'variant_error_{origin}'):
             st.error(st.session_state.pop(f'variant_error_{origin}'))
-    if use_sac_gen and active_sac_pointer:
-        st.caption('Saved model: '+active_sac_pointer.get('name','SAC-Gen'))
+    if use_sac_gen:
+        st.caption('Selected model: '+planning_choice)
+        if planning_entry.get('source') == 'pretrained':
+            st.caption('Bundled trained parameters · PAN/DMF metal-salt process · No API or local training required. Exact private training-recipe membership is not distributed; support remains unverified.')
+    if space.get('range_basis') == 'PROPOSED_SEARCH':
+        st.caption('The starting bounds are editable proposal-search settings. They are not recorded device-validation evidence; generating a preview does not operate equipment.')
     strategy_key=f'sac_gen_strategy_{origin}'
     if strategy_key in st.session_state:
         st.session_state[strategy_key]=st.session_state[strategy_key].replace('XRD/STEM','XRD')
@@ -595,12 +649,17 @@ elif page == "Next batch":
     if generate_saved or generate_after_save:
         try:
             with st.spinner('Evaluating the candidate pool and joint batch information...'):
-                from sacfactory.sac_gen import latest as latest_sac_gen
-                deployed=latest_sac_gen(store.root,origin,samples) if use_sac_gen else None
+                from sacfactory.planning_models import load as load_planning_model
+                deployed=load_planning_model(store.root,origin,planning_choice,samples) if use_sac_gen else None
+                if deployed is not None:
+                    store.put_many('meta',[{'id':'planning_model','origin':origin,'selection':planning_choice,'enabled':True}],'id',overwrite=True)
+                    if fresh_pretrained_plan:
+                        store.put_many('meta',[{'id':'plan_context','origin':origin,'context':context},
+                            {'id':'space','origin':origin,'space':space}],'id',overwrite=True)
                 result, note = recommend(state, samples, context,{**space,'sac_gen_strategy':sac_gen_strategy}, origin, count, reservations,sac_gen=deployed)
             st.session_state[f"preview_{origin}"] = snapshot_rows(result)
             st.session_state[f"plan_note_{origin}"] = note
-        except ValueError as exc:
+        except (ValueError, KeyError, OSError, RuntimeError) as exc:
             st.error(str(exc))
     left, right = st.columns([1.15, 1.5], gap="large")
     with left:
@@ -692,6 +751,9 @@ elif page == "Next batch":
                                'repeat_strategy': repeat_strategy, 'batch_effect': batch_effect, 'descriptor_profile': descriptor_profile,
                                'repeat_budget_fraction': repeat_fraction, 'repeat_goal_half_width': repeat_goal, 'repeat_cap': repeat_cap,
                                'concentration_tolerance_fraction': concentration_tolerance, 'cutoff_tolerance_C': cutoff_tolerance, 'robustness_weight': robustness_weight}
+                    if use_sac_gen and planning_entry.get('source') == 'pretrained':
+                        updated.update(range_basis='PROPOSED_SEARCH', device_validation_recorded=verified,
+                                       sac_gen_candidate_budget=space.get('sac_gen_candidate_budget',256))
                     if use_cutoff: updated.update(pulse_limit_min_C=cutoff_min, pulse_limit_max_C=cutoff_max)
                     validate_space(updated, origin)
                     if not range_source or not all(v.strip() for v in (precursor, support, protocol)):
@@ -811,9 +873,9 @@ elif page == "Next batch":
             else:
                 st.caption("No experiments are currently reserved.")
 
-elif page == "Discovery lab":
-    from sacfactory.ui_discovery import render_discovery
-    render_discovery(store,samples,methods,context)
+elif page == "Discovery & Workflows":
+    from sacfactory.ui_workflows import render_workflows
+    render_workflows(store,samples,context,methods,unified=True)
 
 elif page == "Data analysis":
     render_analysis(samples, methods, origin, reservations, context, space, state.info, store)

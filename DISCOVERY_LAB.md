@@ -2,8 +2,14 @@
 
 Discovery lab links recipe prediction, literature context, model updates,
 experimental decisions and returned evidence. Start with **Real experiments →
-Discovery lab → Predict** to use the bundled trained SAC-Gen models immediately.
+Discovery & Workflows → Scientific tools → Predict** to use the bundled trained SAC-Gen models immediately.
 See the [model card](pretrained/MODEL_CARD.md) for inputs and inference limits.
+
+**Next batch** also uses both bundled models to propose an entire experiment
+group without local training. The individual tools below live under
+**Scientific tools**. The other workspace tabs connect them through persistent
+workflows, device inventory, scheduling and reviewed returns; see
+[Devices and workflows](DEVICES_AND_WORKFLOWS.md).
 
 | Tab | Purpose | Requires local experimental data? |
 | --- | --- | --- |
@@ -19,7 +25,7 @@ See the [model card](pretrained/MODEL_CARD.md) for inputs and inference limits.
 
 ## First prediction
 
-1. Open **Discovery lab → Predict** in REAL.
+1. Open **Discovery & Workflows → Scientific tools → Predict** in REAL.
 2. Select **SAC-Gen-GB** for a fast point forecast, or **SAC-Gen-Diffusion** for
    neural loading sampling.
 3. Select elements directly in the periodic table. Enter each precursor amount

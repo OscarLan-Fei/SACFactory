@@ -35,8 +35,8 @@ workflows; they do not make different feature sets identical.
 4. **Predict structural-assessment probability.** A regularized logistic head
    combines recipe/chemical features, a masked mechanistic prior and the generated
    summaries. It returns PASS and FAIL probabilities plus the declared threshold.
-5. **Review and reserve future experiments.** Next batch uses a selected local
-   deployment checkpoint, allowed ranges and an acquisition objective. Manual
+5. **Review and reserve future experiments.** Next batch uses a bundled pretrained
+   release or selected local checkpoint, allowed ranges and an acquisition objective. Manual
    edits require a refreshed forecast before the result is returned.
 
 The public user interface exposes the two SAC-Gen variants above. The underlying
@@ -93,7 +93,7 @@ The repository contains algorithms, synthetic demonstrations and an
 checkpoints, experimental records and validation exports are excluded. The public
 release contains only the parameters needed for forward prediction, with no
 sample records, identifiers, split membership or training logs. Use it directly
-under Discovery lab, or train separate local deployment candidates.
+under Next batch or Discovery & Workflows, or train separate local deployment candidates.
 
 ## Implementation map
 

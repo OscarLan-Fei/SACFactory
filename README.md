@@ -3,8 +3,11 @@
 **A local experiment workbench for single-atom catalyst synthesis.**
 
 SACFactory includes trained **SAC-Gen-Diffusion** and **SAC-Gen-GB** inference
-models. After installation, open **Real experiments → Discovery lab → Predict**
-to forecast a recipe without historical records, an API key or retraining.
+models. After installation, open **Real experiments → Next batch** to generate
+the next experiment group immediately. Select **Pretrained SAC-Gen-GB** for fast
+point forecasts or **Pretrained SAC-Gen-Diffusion** for neural loading sampling.
+No historical records, API key or retraining are required. For a single recipe,
+use **Discovery & Workflows → Scientific tools → Predict**.
 See the [model card](pretrained/MODEL_CARD.md) and [Discovery lab guide](DISCOVERY_LAB.md).
 
 SACFactory connects recipe recording, chemical descriptors, model evaluation and
@@ -68,11 +71,11 @@ are described in the [pretrained model card](pretrained/MODEL_CARD.md).
 
 | Workspace | Purpose | Typical output |
 | --- | --- | --- |
-| **Experiment chat** | Local experiment shortcuts, or an optional API-backed conversation with selected data | Explanations, tables and proposed actions |
+| **Experiment chat** | Select templates, edit parameters and equipment, and control recorded runs through conversation or local commands | A persistent workflow card, live progress and matching Live board navigation |
 | **Samples & data** | Enter, import, edit and delete recipes; manage pending experiments and return results | Sample records and saved forecasts |
 | **Materials & consumables** | Maintain precursor identities, chemical states and preparation materials | Editable material declarations and reference metadata |
-| **Next batch** | Search allowed conditions with the available planner or a trained SAC-Gen checkpoint | Reviewed proposals that can be added to pending |
-| **Discovery lab** | Direct pretrained prediction, evidence retrieval, candidate models, inverse search and frozen experimental feedback | Forecasts, reviewed proposals and an auditable discovery ledger |
+| **Next batch** | Search editable conditions with either bundled pretrained SAC-Gen model or a local checkpoint | ICP loading and structural PASS/FAIL forecasts, with one-click Pending creation |
+| **Discovery & Workflows** | Use 14 starter workflows or individual scientific tools with one source selection, model registry and discovery ledger | Recipe design, plan approval, preparation and performance returns, protected validation, cumulative model updates, 103 equipment types and live scheduling |
 | **Data analysis** | Explore outcomes, assess descriptors, validate predictions and compare models | Plots, paired predictions, metrics and exports |
 | **Language model** | Configure an optional compatible API and explicit data sharing | Research conversation connected to selected records |
 | **About** | Read the workbench overview and method context | Project orientation |
@@ -90,6 +93,16 @@ to the experiment loop. Dedicated learned recognition models require additional
 domain-specific validation.
 
 ## A first session
+
+For immediate experiment proposals, select **Real experiments → Next batch**.
+The empty workspace starts with Fe, 2 g PAN and 20 mL DMF; 50 mM is 1 mmol.
+Review the editable concentration, pulse and cutoff search bounds, choose the
+model and objective, and click **Generate batch preview**. Click **Add batch to
+pending** to keep the recipes and their original model forecasts. These starting
+bounds are proposal settings, not evidence that a device has been validated.
+Generating a preview does not execute a laboratory workflow or operate equipment.
+
+To explore training and evaluation with synthetic records:
 
 1. Select **Simulated demo · DEMO** to explore the synthetic campaign.
 2. Open **Data analysis → Weighted validation**. Select elements, models and a
@@ -125,7 +138,7 @@ REAL starts in a separate empty local database. This repository excludes the
 author's experimental records, raw assays, credentials and original private
 training checkpoints. The **inference-only pretrained release** includes learned
 parameters and aggregate normalizers, with experimental rows and training traces
-removed. It works in Discovery lab immediately. Local Next batch deployments and
+removed. It works in Next batch and Discovery & Workflows immediately. Local deployments and
 new candidates can still be trained using the appropriate data space.
 Runtime databases and checkpoints are excluded by `.gitignore`.
 
@@ -139,6 +152,11 @@ publishing the repository does not itself create a hosted application.
 - [Model, physical priors and evaluation methods](METHODS.md)
 - [SAC-Gen architecture and information controls](SAC_GEN_DESIGN.md)
 - [Discovery lab guide](DISCOVERY_LAB.md)
+- [Devices and conversational workflows](DEVICES_AND_WORKFLOWS.md)
+- [Workflow template reference](WORKFLOW_TEMPLATES.md)
+- [Conversation workflow controls](CONVERSATION_WORKFLOWS.md)
+- [Reviewed synthesis and learning loop](CONFIRMED_SYNTHESIS_WORKFLOWS.md)
+- [Synthetic demonstration walkthrough](DEMO_WALKTHROUGH.md)
 - [Pretrained model card](pretrained/MODEL_CARD.md)
 - [Predictive and acquisition benchmarks](BENCHMARKS.md)
 - [Source acknowledgments](CREDITS.md)
