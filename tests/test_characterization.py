@@ -34,6 +34,15 @@ def image_bytes():
 
 
 class CharacterizationTests(unittest.TestCase):
+    def test_normal_evidence_review_does_not_scan_the_whole_sample_library(self):
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as folder:
+            store,ledger,sample=self.setup_store(folder);artifact=self.artifact(store,ledger,sample)
+            with patch.object(store,'all',side_effect=AssertionError('Unexpected full sample scan')):
+                reviewed=review_artifact(store,ledger,artifact['id'],'NO_RESOLVED_TARGET_CRYSTALLINE_PEAKS','Analyst')
+            self.assertEqual(reviewed['record_key'],artifact['record_key'])
+            self.assertEqual(evidence_summary(sample,ledger)['recommended_screening_state'],'PASS')
+
     def setup_store(self,folder):
         store=Store(folder,'REAL');sample=specimens(1)[0]
         sample.update(record_uid='test-physical-record',xrd={'mode':'MANUAL','state':'PENDING'},stem={'state':'NOT_TESTED'},icp=[],result_reported_at=None)
