@@ -51,9 +51,26 @@ def load_model(root,origin,name,samples):
     return SACGen.load(path.parent/item['run_id'],samples)
 
 
-def train_candidate(root,samples,origin,name='SAC-Gen-Set',epochs=100,seed=42):
+def train_candidate(root,samples,origin,name='SAC-Gen-Set',epochs=100,seed=42,operation_key=None):
     from .validation import usable
     sources=usable(samples,origin)
+    base=Path(root)/'discovery_models'/origin.lower();base.mkdir(parents=True,exist_ok=True)
+    run_id=('workflow_'+digest([operation_key,name,epochs,seed,digest(sources)])[:24]) if operation_key else stamp().replace(':','').replace('.','')+'_'+uuid4().hex[:6]
+    existing=base/run_id
+    if operation_key and existing.exists():
+        if name=='SAC-Gen-Set':model=SetResidual.load(existing)
+        elif name=='Calibrated discovery ensemble':
+            from .decision import DecisionEnsemble
+            model=DecisionEnsemble.load(existing)
+        elif name in {'SAC-Gen-GB','SAC-Gen-Diffusion'}:
+            from ..sac_gen import SACGen
+            model=SACGen.load(existing,samples)
+        else:raise ValueError('Select a supported candidate family.')
+        path=base/'index.json';index=json.loads(path.read_text()) if path.exists() else {}
+        item={'name':name,'run_id':run_id,'model_id':model.model_id,'training_fingerprint':digest(sources),
+              'created':stamp(),'activation':'Discovery candidate only; primary deployment unchanged'}
+        index[name]=item;temp=base/'index.pending.json';temp.write_text(json.dumps(index,indent=2),encoding='utf-8');temp.replace(path)
+        return item
     if name=='Calibrated discovery ensemble':
         from .decision import DecisionEnsemble
         model=DecisionEnsemble().fit(sources,origin,epochs,seed)
@@ -65,8 +82,6 @@ def train_candidate(root,samples,origin,name='SAC-Gen-Set',epochs=100,seed=42):
                   'epochs_baseline':epochs,'epochs_diffusion':epochs,'refine_xrd':True}
         model=SACGen('Gradient boosting residual' if name.endswith('GB') else 'Diffusion Transformer',settings).fit(sources,origin,{})
     else:raise ValueError('Select a supported candidate family.')
-    base=Path(root)/'discovery_models'/origin.lower();base.mkdir(parents=True,exist_ok=True)
-    run_id=stamp().replace(':','').replace('.','')+'_'+uuid4().hex[:6]
     model.save(base/run_id)
     reloaded=type(model).load(base/run_id) if name in {'SAC-Gen-Set','Calibrated discovery ensemble'} else type(model).load(base/run_id,samples)
     first=model.predict([query(sources[0])])[0];second=reloaded.predict([query(sources[0])])[0]

@@ -200,9 +200,12 @@ def register_artifact(store,ledger,sample_id,modality,name,content,analysis,meta
 
 def review_artifact(store,ledger,artifact_id,observation,reviewer,notes=''):
     if store.origin!=ledger.origin:raise ValueError('Evidence review cannot cross data spaces.')
-    artifact=next((a for a in ledger.records('characterization') if a['id']==artifact_id),None)
+    artifact=ledger.get('characterization',artifact_id)
     if artifact is None:raise ValueError('Unknown characterization artifact.')
-    sample=next((s for s in store.all('sample') if identity(s)==artifact['record_key']),None)
+    sample=store.get('sample',artifact['sample_id'])
+    if sample is None or identity(sample)!=artifact['record_key']:
+        # Display IDs can be compacted; stable physical identity remains authoritative.
+        sample=next((s for s in store.all('sample') if identity(s)==artifact['record_key']),None)
     if sample is None or recipe_id(sample)!=artifact['recipe_key']:raise ValueError('The sample recipe changed or was deleted; acquire or register evidence for the actual recipe.')
     path=(store.root/artifact['relative_path']).resolve()
     if not path.is_relative_to(store.root.resolve()) or not path.exists() or hashlib.sha256(path.read_bytes()).hexdigest()!=artifact['sha256']:
@@ -215,11 +218,12 @@ def review_artifact(store,ledger,artifact_id,observation,reviewer,notes=''):
 
 def evidence_summary(sample,ledger):
     if sample.get('origin')!=ledger.origin:raise ValueError('Evidence fusion cannot cross data spaces.')
-    reviews={r['artifact_id']:r for r in ledger.records('characterization_review') if r['record_key']==identity(sample)}
-    artifacts={a['id']:a for a in ledger.records('characterization')}
+    record_key=identity(sample);current_recipe=recipe_id(sample)
+    reviews={r['artifact_id']:r for r in ledger.records('characterization_review',record_key=record_key)}
+    artifacts={a['id']:a for a in ledger.records('characterization',record_key=record_key)}
     active=[];invalid=[]
     for key,review in reviews.items():
-        if key not in artifacts or review['recipe_key']!=recipe_id(sample):continue
+        if key not in artifacts or review['recipe_key']!=current_recipe:continue
         artifact=artifacts[key];path=(ledger.path.parent/artifact['relative_path']).resolve()
         if (not path.is_relative_to(ledger.path.parent.resolve()) or not path.exists()
                 or hashlib.sha256(path.read_bytes()).hexdigest()!=review['evidence_sha256']):
@@ -230,7 +234,7 @@ def evidence_summary(sample,ledger):
     negative=bool(observed&{'TARGET_CRYSTALLINE_PHASE_DETECTED','CLUSTERS_OBSERVED'})
     conflict=positive_stem and negative
     label='PENDING' if conflict else 'FAIL' if negative else 'PASS' if positive_stem or 'NO_RESOLVED_TARGET_CRYSTALLINE_PEAKS' in observed else 'PENDING'
-    return {'record_key':identity(sample),'recipe_key':recipe_id(sample),'review_ids':[r['id'] for r in active],
+    return {'record_key':record_key,'recipe_key':current_recipe,'review_ids':[r['id'] for r in active],
             'artifact_ids':[r['artifact_id'] for r in active],'observations':sorted(observed),'recommended_screening_state':label,
             'conflict':conflict,'morphology_alert':'AGGREGATES_OBSERVED' in observed,
             'invalid_artifact_ids':invalid,'modalities':sorted({r['modality'] for r in active}),

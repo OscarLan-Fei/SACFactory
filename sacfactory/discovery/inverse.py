@@ -7,7 +7,7 @@ from .common import query,recipe_id,values
 from ..precursor_catalog import resolve_planning_precursors
 
 
-def candidates(context,elements,bounds_mmol,temperature=(800,1600),pulses=(1,2,4),count=128,seed=42,max_total_mmol=None):
+def candidates(context,elements,bounds_mmol,temperature=(800,1600),pulses=(1,2,4),count=128,seed=42,max_total_mmol=None,composition_mode='independent'):
     elements=sorted(set(elements))
     if not elements or set(bounds_mmol)!=set(elements):raise ValueError('Provide amount bounds for every selected element.')
     lower,upper=map(float,temperature)
@@ -18,11 +18,15 @@ def candidates(context,elements,bounds_mmol,temperature=(800,1600),pulses=(1,2,4
     if not 1<=count<=4096:raise ValueError('Use 1-4096 candidate recipes.')
     for lo,hi in bounds_mmol.values():
         if not all(math.isfinite(float(v)) for v in (lo,hi)) or not 0<float(lo)<=float(hi):raise ValueError('Invalid positive mmol bounds.')
+    if composition_mode not in {'independent','equimolar'}:raise ValueError('Choose independent or equimolar precursor feeds.')
+    shared_low=max(v[0] for v in bounds_mmol.values());shared_high=min(v[1] for v in bounds_mmol.values())
+    if composition_mode=='equimolar' and shared_low>shared_high:raise ValueError('Equimolar feeds require overlapping per-element mmol bounds.')
     if max_total_mmol is not None and (not math.isfinite(max_total_mmol) or max_total_mmol<=0):raise ValueError('Invalid total precursor limit.')
     points=qmc.Sobol(len(elements)+2,scramble=True,seed=seed).random_base2(math.ceil(math.log2(count)))[:count]
     result=[];seen=set()
     for point in points:
         amounts={e:float(bounds_mmol[e][0]+point[j]*(bounds_mmol[e][1]-bounds_mmol[e][0])) for j,e in enumerate(elements)}
+        if composition_mode=='equimolar':amounts={e:float(shared_low+point[0]*(shared_high-shared_low)) for e in elements}
         if max_total_mmol is not None and sum(amounts.values())>max_total_mmol:continue
         recipe={k:copy.deepcopy(v) for k,v in context.items() if k not in ['icp','xrd','stem','result_reported_at','icp_review']}
         recipe['elements']=elements;volume=float(recipe.get('solvent_volume_mL',20.))

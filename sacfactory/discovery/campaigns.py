@@ -23,9 +23,16 @@ class CampaignLedger:
             db.execute('INSERT INTO events VALUES(?,?,?,?)',(row['id'],kind,row['created'],json.dumps(row,allow_nan=False)))
         return row
 
-    def records(self,kind):
+    def get(self,kind,ident):
+        with closing(sqlite3.connect(self.path)) as db:
+            row=db.execute('SELECT payload FROM events WHERE kind=? AND id=?',(kind,ident)).fetchone()
+            return json.loads(row[0]) if row else None
+
+    def records(self,kind,record_key=None):
         with closing(sqlite3.connect(self.path)) as db, db:
-            return [json.loads(r[0]) for r in db.execute('SELECT payload FROM events WHERE kind=? ORDER BY created,id',(kind,))]
+            if record_key is None:rows=db.execute('SELECT payload FROM events WHERE kind=? ORDER BY created,id',(kind,))
+            else:rows=db.execute("SELECT payload FROM events WHERE kind=? AND json_extract(payload,'$.record_key')=? ORDER BY created,id",(kind,record_key))
+            return [json.loads(r[0]) for r in rows]
 
     def freeze(self,samples,model_metadata):
         if any(s.get('origin')!=self.origin for s in samples):raise ValueError('Do not mix data spaces.')
