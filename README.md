@@ -80,8 +80,14 @@ are described in the [pretrained model card](pretrained/MODEL_CARD.md).
 | **Language model** | Configure an optional compatible API and explicit data sharing | Research conversation connected to selected records |
 | **About** | Read the workbench overview and method context | Project orientation |
 
-The [User guide](USER_GUIDE.md) explains all nine analysis tabs, the score plots,
+The [User guide](USER_GUIDE.md) explains all ten analysis tabs, the score plots,
 element selection and the complete record-to-prediction workflow.
+
+Compare several saved models on the identical Next batch recipes, then keep
+those pre-result forecasts with Pending. **Data analysis → Forecast follow-up**
+matches returned ICP and structural results to the saved predictions, displaying
+ICP regression, structural calibration, FAIL recall and eligibility audits.
+See [Forecast comparison and follow-up](FORECAST_REVIEW.md).
 
 The [Discovery lab guide](DISCOVERY_LAB.md) covers its nine connected tabs,
 unit conventions, protected validation, feedback storage and candidate models.
@@ -149,6 +155,7 @@ publishing the repository does not itself create a hosted application.
 
 - [Local deployment with Codex](INSTALL_WITH_CODEX.md)
 - [User guide and module reference](USER_GUIDE.md)
+- [Forecast comparison and result follow-up](FORECAST_REVIEW.md)
 - [Model, physical priors and evaluation methods](METHODS.md)
 - [SAC-Gen architecture and information controls](SAC_GEN_DESIGN.md)
 - [Discovery lab guide](DISCOVERY_LAB.md)

@@ -85,6 +85,10 @@ values remain missing rather than being guessed.
 4. Set the acquisition objective and requested size; generate and review a preview.
 5. Use **Add batch to pending** to preserve proposals before testing.
 
+Optionally expand **Compare saved models on these recipes** before adding the
+batch. All selected models forecast identical controls; their prediction ranges
+show disagreement. The comparison snapshots are stored with Pending.
+
 A new REAL workspace starts with Fe at a 50 mM reference (1 mmol in 20 mL),
 2 g PAN, and editable proposed bounds of 10–120 mM, 800–1400 C and 1/2/4 pulses.
 These are search settings, not validated device limits. Device-validation
@@ -142,6 +146,11 @@ their own calculation controls.
 | **Element campaign** | What supports moving between elements and into mixtures? | Campaign coverage and transfer context |
 | **Weighted validation** | Do predicted ICP/XRD outcomes and scores match observations? | Shared-mask comparisons and endpoint diagnostics |
 | **Model comparison** | Which model or acquisition policy performs best under a common protocol? | Matched comparisons, not automatic superiority claims |
+| **Forecast follow-up** | Do saved pre-result forecasts match returned ICP and structural outcomes? | Endpoint-specific regression, calibration, FAIL recall and timing/provenance audits |
+
+See [Forecast comparison and follow-up](FORECAST_REVIEW.md) for the complete
+sequence, equal-specimen weighting and timestamp rules. This panel uses saved
+forecasts; Weighted validation fits workflows under protected historical masks.
 
 Element selectors support multiple elements and a periodic-table interface.
 Regression requires quantified compatible ICP; mixture totals require the

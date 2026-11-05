@@ -271,6 +271,9 @@ def render_recommendations(rows, key):
     if any(r.get("prediction_mode") in {"TRANSFER_HYPOTHESIS", "TARGET_AND_TRANSFER"} for r in rows):
         st.caption("Transfer outputs share member information and retain pair/composition residuals. Source-only mixtures are unvalidated hypotheses. Source affinity is kernel similarity; an unseen target remains a transfer hypothesis.")
         st.dataframe(pd.DataFrame(table)[["prediction_mode", "target_labeled_n", "source_compositions", "source_sample_ids", "source_affinity", "support_level", "expansion_step", "unobserved_pair_count", "predictive_entropy"]], hide_index=True, width="stretch")
+    if sac_gen_rows:
+        from sacfactory.ui_forecast_review import render_batch_comparison
+        render_batch_comparison(rows, store, samples, key)
     linked = [r for r in store.all("recommendation") if r["recommendation_id"] in {row["recommendation_id"] for row in rows} and r.get("pending_sample_id")]
     if st.button("Add batch to pending", disabled=len(linked) == len(rows), key=f"pending_{key}", type="primary"):
         try:
