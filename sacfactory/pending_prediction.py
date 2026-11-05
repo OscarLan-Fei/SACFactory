@@ -29,7 +29,7 @@ def refresh_pending_prediction(store, sample_id, expected):
     samples = [v for (kind, _), v in data.items() if kind == 'sample']
     queues = [v for (kind, _), v in data.items() if kind == 'recommendation']
     methods = {ident: v for (kind, ident), v in data.items() if kind == 'method'}
-    if has_observations(sample) or sample.get('result_reported_at') or sample_id not in {s['sample_id'] for s in pending_samples(samples, queues, methods)}:
+    if has_observations(sample) or sample.get('result_reported_at') or sample.get('endpoint_reported_at') or sample_id not in {s['sample_id'] for s in pending_samples(samples, queues, methods)}:
         raise ValueError('Only an unmeasured pending sample can receive a new pre-result prediction.')
     if sample.get('pulse_limit_C') is None:
         raise ValueError('Enter a controlled cutoff before predicting a pending recipe.')
@@ -41,7 +41,7 @@ def refresh_pending_prediction(store, sample_id, expected):
         forecast=deployed.predict([prepare_context(sample,deployed)])[0]
         prediction={'created':now(),'origin':store.origin,'recipe':{k:copy.deepcopy(sample.get(k)) for k in
             ('origin','elements','concentrations_mM','pulse_count','pulse_limit_C','precursor_family','precursors',
-             'support_batch','protocol_id','pan_mass_g','solvent_volume_mL','preparation_basis') if k in sample},
+             'support_batch','protocol_id','pan_mass_g','solvent_volume_mL','preparation_basis','carbonization_loss_fraction','carbonization_loss') if k in sample},
             'model_name':'SAC-Gen','model_id':deployed.model_id,'sac_gen_prediction':forecast,
             'p_xrd_pass':forecast['p_xrd_pass'],'p_xrd_fail':forecast['p_xrd_fail'],'p_screen_pass':None,
             'xrd_pass_threshold':forecast.get('xrd_pass_threshold',.5),'predicted_xrd_state':forecast.get('predicted_xrd_state'),
@@ -83,7 +83,7 @@ def refresh_pending_prediction(store, sample_id, expected):
         'note': 'Prediction of the saved manually adjusted recipe. Human intervention is explicit; this is not an untouched algorithm-selected experiment. No target outcomes were available to this fit.'}
     # Store controls only, not recursively nested forecast histories or outcomes.
     prediction['recipe'] = {k: copy.deepcopy(sample.get(k)) for k in
-        ('origin', 'elements', 'concentrations_mM', 'pulse_count', 'pulse_limit_C', 'precursor_family', 'precursors', 'support_batch', 'protocol_id', 'pan_mass_g', 'solvent_volume_mL', 'preparation_basis') if k in sample}
+        ('origin', 'elements', 'concentrations_mM', 'pulse_count', 'pulse_limit_C', 'precursor_family', 'precursors', 'support_batch', 'protocol_id', 'pan_mass_g', 'solvent_volume_mL', 'preparation_basis', 'carbonization_loss_fraction','carbonization_loss') if k in sample}
     from .mixing import forecast_metadata
     prediction['mixing'] = forecast_metadata(sample, state.info, probability)
     from .pulseicp_bridge import forecast as icp_forecast, identity as icp_identity
@@ -118,7 +118,9 @@ def persist_prediction(store,sample_id,snapshot,data,sample,prediction,probabili
                            current_prediction_basis='HUMAN_ADJUSTED_RECIPE')
             if prediction.get('model_name')=='SAC-Gen':
                 amended.update(p_xrd_pass=prediction['p_xrd_pass'],p_xrd_fail=prediction['p_xrd_fail'],
-                    sac_gen_prediction=prediction['sac_gen_prediction'])
+                    sac_gen_prediction=prediction['sac_gen_prediction'],
+                    current_model_id=prediction['model_id'],
+                    current_model_name=prediction['sac_gen_prediction'].get('model_name'))
             connection.execute("UPDATE items SET payload=? WHERE kind='recommendation' AND id=?",
                 (json.dumps(amended, ensure_ascii=False, allow_nan=False), link))
             connection.execute('INSERT INTO audit(created,action,kind,id,before_json,after_json) VALUES(?,?,?,?,?,?)',

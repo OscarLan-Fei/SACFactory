@@ -273,6 +273,9 @@ def recommend(state, samples, context, space, origin, count=6, reservations=(),s
     synthesis_context = {k: context[k] for k in ("elements", "temperature_C", "precursor_family", "support_batch", "protocol_id")}
     from .preparation import copy_preparation
     copy_preparation(context, synthesis_context)
+    for key in ('carbonization_loss_fraction', 'carbonization_loss'):
+        if key in context:
+            synthesis_context[key] = context[key]
     if 'precursors' in context:
         synthesis_context['precursors'] = context['precursors']
     synthesis_context["origin"] = origin

@@ -173,7 +173,7 @@ def render_pending(store, samples, methods):
                 saved(store, result, 'pending')
             except (ValueError, TypeError, KeyError) as exc:
                 st.error(str(exc))
-    eligible_ids=[s['sample_id'] for s in pending if not has_observations(s) and not s.get('result_reported_at')]
+    eligible_ids=[s['sample_id'] for s in pending if not has_observations(s) and not s.get('result_reported_at') and not s.get('endpoint_reported_at')]
     key=f'pending_reforecast_samples_{store.origin}'
     if key in st.session_state:
         st.session_state[key]=[i for i in st.session_state[key] if i in eligible_ids]
@@ -222,11 +222,11 @@ def render_pending(store, samples, methods):
     prediction = sample.get('manual_prediction')
     if prediction:
         st.caption('Human-adjusted recipe forecast' + (' (stale; save changes and predict again).' if prediction.get('prediction_stale') else '. Saved before result entry; separate from the original recommendation.'))
-    if st.button('Predict saved pending parameters', disabled=has_observations(sample) or bool(sample.get('result_reported_at')),
+    if st.button('Predict saved pending parameters', disabled=has_observations(sample) or bool(sample.get('result_reported_at')) or bool(sample.get('endpoint_reported_at')),
                  key=f'pending_predict_{store.origin}_{ident}'):
         try:
             from .pending_prediction import refresh_pending_prediction
-            with st.spinner('Refitting from eligible saved observations and predicting the saved recipe...'):
+            with st.spinner('Predicting the saved recipe with the selected model...'):
                 refresh_pending_prediction(store, ident, fingerprint(sample))
             st.session_state[f'manual_notice_pending_{store.origin}'] = 'Saved a new model forecast for the manually adjusted recipe. Original proposal history is retained.'
             st.rerun()

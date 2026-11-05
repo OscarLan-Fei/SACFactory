@@ -153,6 +153,8 @@ def save_manual_revisions(store, supplied, methods, mode, expected):
                 result["completed_tasks" if completed else "open_tasks"] += 1
             result["statuses"][ident] = screen(sample, methods)["status"]
             if sample != old:
+                from .forecast_review import record_endpoint_times
+                record_endpoint_times(sample, old, now())
                 resolved = screen(sample, methods)
                 if actual_batch_recorded(sample) and resolved["label"] is not None and not resolved["review_conflicts"]:
                     sample["result_reported_at"] = old.get("result_reported_at") or now()

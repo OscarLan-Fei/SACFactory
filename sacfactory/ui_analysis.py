@@ -77,9 +77,13 @@ def render_analysis(samples, methods, origin, recommendations=(), planning_conte
     columns[3].metric("Distinct complete recipes", info["distinct_recipes"])
     st.caption(f"{info['passed']} passed / {info['failed']} failed; {info['pending']} pending; {info['conflicts']} conflicts excluded. Pass rate uses resolved, nonconflicting outcomes only. Screening PASS is a candidate label; STEM remains separate.")
     st.caption('Correlation analysis: open Correlations & coverage below. Outcome Maps contains the two-parameter interaction map.')
-    overview, trends, associations, chemical, outcome_chemistry, loading, campaign, weighted, benchmarks = st.tabs(["Batch overview", "Parameter relationships", "Correlations & coverage", "Chemical descriptors", "Success & failure", "ICP loading prediction", "Element campaign", "Weighted validation", "Model comparison"],
+    overview, trends, associations, chemical, outcome_chemistry, loading, campaign, weighted, benchmarks, followup = st.tabs(["Batch overview", "Parameter relationships", "Correlations & coverage", "Chemical descriptors", "Success & failure", "ICP loading prediction", "Element campaign", "Weighted validation", "Model comparison", "Forecast follow-up"],
         default='Correlations & coverage', key=f'analysis_views_{origin}', on_change='rerun')
     chemical_frame = cached_analysis_frame(selected_samples, methods, origin)
+    if followup.open:
+        with followup:
+            from .ui_forecast_review import render_follow_up
+            render_follow_up(selected_samples, origin, recommendations)
     if benchmarks.open:
         with benchmarks:
             from .ui_benchmarks import render_benchmarks

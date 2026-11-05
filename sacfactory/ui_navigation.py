@@ -8,6 +8,7 @@ ANALYSIS_CONTROL_PREFIXES = (
     'map_', 'surface_', 'transfer_analysis_', 'readiness_', 'recipe_precision_',
     'recipe_cap_', 'repeat_', 'pair_elements_', 'prediction_', 'evaluation_',
     'chemistry_', 'agreement_', 'research_', 'comparison_',
+    'followup_',
 )
 
 

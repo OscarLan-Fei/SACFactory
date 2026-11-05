@@ -290,6 +290,9 @@ class Store:
                 pending = {k: copy.deepcopy(r[k]) for k in ("origin", "elements", "concentrations_mM", "pulse_count", "precursor_family", "support_batch", "protocol_id")}
                 from .preparation import copy_preparation
                 copy_preparation(r, pending)
+                for field in ('carbonization_loss_fraction', 'carbonization_loss'):
+                    if field in r:
+                        pending[field] = copy.deepcopy(r[field])
                 if 'precursors' in r:
                     pending['precursors'] = copy.deepcopy(r['precursors'])
                 pending.update(sample_id=ident, batch_id="UNKNOWN", temperature_C=None, voltage_V=None, current_A=None,
@@ -299,7 +302,9 @@ class Store:
                                stem={"state": "NOT_TESTED", "source": "", "reviewer": "", "notes": ""},
                                notes="Planned experiment; actual synthesis batch and results have not been recorded.",
                                proposal={k: copy.deepcopy(row.get(k)) for k in ("recipe", "model_id", "model_info", "p_screen_pass", "purpose", "source_sample_ids", "source_elements", "source_affinity", "prediction_mode", "created", "bridge_sources", "support_level", "source_compositions", "expansion_step", "unobserved_pair_count", "unseen_elements", "evaluation_capture", "policy",
-                                   'p_screen_low', 'p_screen_high', 'bald_bits', 'joint_information_bits', 'incremental_information_bits', 'model_disagreement', 'calibration_state', 'acquisition', 'interval_note', 'is_repeat', 'repeat_rationale', 'repeat_strategy', 'robustness', 'icp_prediction')})
+                                   'p_screen_low', 'p_screen_high', 'bald_bits', 'joint_information_bits', 'incremental_information_bits', 'model_disagreement', 'calibration_state', 'acquisition', 'interval_note', 'is_repeat', 'repeat_rationale', 'repeat_strategy', 'robustness', 'icp_prediction',
+                                   'sac_gen_prediction', 'p_xrd_pass', 'p_xrd_fail', 'xrd_pass_threshold', 'predicted_xrd_state',
+                                   'predicted_total_wt_percent', 'prediction_target', 'comparison_predictions')})
                 pending = validate_sample(pending)
                 from .numbering import sample_identity
                 pending = sample_identity(c, pending)

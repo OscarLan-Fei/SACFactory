@@ -53,6 +53,8 @@ def prepare_reports(samples, store, methods):
         from .manual import actual_batch_recorded
         from .storage import now
         result = screen(sample, methods)
+        from .forecast_review import record_endpoint_times
+        record_endpoint_times(sample, old, now())
         if actual_batch_recorded(sample) and result['label'] is not None and not result['review_conflicts']:
             sample['result_reported_at'] = old.get('result_reported_at') or now()
         revised.append(sample)
