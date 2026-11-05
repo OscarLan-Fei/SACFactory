@@ -64,6 +64,10 @@ class PretrainedPlanningTests(unittest.TestCase):
             next(b for b in app.button if b.label=='Generate batch preview').click().run()
             self.assertFalse(app.error)
             self.assertNotEqual(app.session_state['preview_REAL'][0]['model_id'],first)
+            app.button(key='forecast_compare_REAL_plan_run').click().run()
+            self.assertFalse(app.exception)
+            self.assertFalse(app.error)
+            self.assertEqual(len(app.session_state['preview_REAL'][0]['comparison_predictions']),2)
             app.button(key='pending_plan').click().run()
             self.assertFalse(app.exception)
             self.assertFalse(app.error)
@@ -71,11 +75,19 @@ class PretrainedPlanningTests(unittest.TestCase):
             pending=store.all('sample')
             self.assertEqual(len(pending),6)
             self.assertTrue(all(s['xrd']['state']=='PENDING' for s in pending))
+            self.assertTrue(all(s['proposal']['sac_gen_prediction'] for s in pending))
+            self.assertTrue(all(len(s['proposal']['comparison_predictions'])==2 for s in pending))
             from sacfactory.pending_prediction import refresh_pending_prediction
+            from sacfactory.manual import save_manual_revisions
             sample=pending[0]
+            edited=copy.deepcopy(sample);edited['pulse_count']+=1
+            save_manual_revisions(store,[edited],{},'pending',{sample['sample_id']:fingerprint(sample)})
+            sample=store.get('sample',sample['sample_id'])
             forecast=refresh_pending_prediction(store,sample['sample_id'],fingerprint(sample))
             self.assertEqual(forecast['sac_gen_prediction']['model_name'],'Pretrained SAC-Gen-Diffusion')
             self.assertGreater(forecast['sac_gen_prediction']['predicted_total_wt_percent'],0)
+            self.assertEqual(forecast['recipe']['pulse_count'],edited['pulse_count'])
+            self.assertEqual(store.get('recommendation',sample['recommendation_id'])['current_model_id'],forecast['model_id'])
 
 
 if __name__ == '__main__':
